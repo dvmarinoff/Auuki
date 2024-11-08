@@ -106,7 +106,7 @@ input, button, textarea {
 }
 
 input {
-    color: #fff;
+    color: var(--input-color);
 }
 
 input::-webkit-outer-spin-button,
@@ -117,7 +117,7 @@ input[type="number"] {
 }
 
 .btn {
-    color: #fff;
+    color: var(--input-color);
     background-color: var(--chrome);
     text-transform: uppercase;
     font-family: var(--ss-font-family);
@@ -391,6 +391,7 @@ body {
 
 /* Theme */
 /* Dark Theme */
+body,
 body.dark-theme {
     --background-color: var(--dark);
     --background-color-2: var(--chrome);
@@ -398,7 +399,20 @@ body.dark-theme {
     --foreground-color-inactive: var(--gray);
     --border-color: var(--white-opacity-01);
     --progress: #fff4;
+    --input-color: var(--white);
 }
+@media (prefers-color-scheme: dark) {
+    body.auto-theme { 
+        --background-color: var(--dark);
+        --background-color-2: var(--chrome);
+        --foreground-color: var(--white); 
+        --foreground-color-inactive: var(--gray);
+        --border-color: var(--white-opacity-01);
+        --progress: #fff4;
+        --input-color: var(--white);
+    }
+} 
+
 /* End Dark Theme */
 
 /* White Theme */
@@ -409,7 +423,19 @@ body.white-theme {
     --foreground-color-inactive: var(--gray);
     --border-color: var(--black-opacity-01);
     --progress: #6f6f6f44;
+    --input-color: var(--white);
 }
+@media (prefers-color-scheme: light) {
+    body.auto-theme { 
+        --background-color: var(--white);
+        --background-color-2: var(--chrome-white);
+        --foreground-color: var(--dark); 
+        --foreground-color-inactive: var(--gray);
+        --border-color: var(--black-opacity-01);
+        --progress: #6f6f6f44;
+        --input-color: var(--white);
+    }
+} 
 /* End White Theme */
 body {
     color: var(--foreground-color);
@@ -418,7 +444,7 @@ body {
 
 input {
     color: var(--foreground-color);
-    background-color: var(--background-color);
+    background-color: var(--input-color);
 }
 .chrome-bg {
     background-color: var(--background-color-2);
@@ -446,7 +472,7 @@ input {
 }
 
 .mode.active {
-    fill: var(--foreground-color);
+    color: var(--foreground-color);
 }
 
 .icon-btn .icon {
@@ -1101,7 +1127,7 @@ div.graph--bar-group {
     line-height: var(--number-input-line-height);
     font-size: var(--number-input-value-font-size);
     text-align: center;
-    background-color: var(--white);
+    background-color: var(--input-color);
     color: var(--black);
     border: 1px solid var(--border-color)
 }

@@ -1341,13 +1341,15 @@ class Theme extends DataView {
     onEffect() {
         if(equals(this.state, 'DARK')) {
             xf.dispatch(`${this.effect}`, {theme: 'WHITE'});
+        }else if (equals(this.state, 'WHITE')) {
+            xf.dispatch(`${this.effect}`, {theme: 'AUTO'});
         } else {
             xf.dispatch(`${this.effect}`, {theme: 'DARK'});
         }
     }
     render() {
-        this.textContent = equals(this.state, 'DARK') ? 'DARK' : 'WHITE';
-        document.body.className =  equals(this.state, 'DARK') ? 'dark-theme' : 'white-theme';
+        this.textContent = equals(this.state, 'DARK') ? 'DARK' : equals(this.state, 'WHITE') ? 'WHITE' : 'AUTO';
+        document.body.className =  equals(this.state, 'DARK') ? 'dark-theme' : equals(this.state, 'WHITE') ? 'white-theme' : 'auto-theme';
     }
 }
 
