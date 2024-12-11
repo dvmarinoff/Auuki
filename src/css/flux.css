@@ -412,7 +412,7 @@ body.white-theme {
     --progress: #6f6f6f44;
     --input-color: var(--white);
     --toogle-inactive-color: var(--gray);
-    --toogle-active-color: var(--zone-blue);
+    --toogle-active-color: var(--black);
 }
 @media (prefers-color-scheme: light) {
     body.auto-theme { 
@@ -424,7 +424,7 @@ body.white-theme {
         --progress: #6f6f6f44;
         --input-color: var(--white);
         --toogle-inactive-color: var(--gray);
-        --toogle-active-color: var(--zone-blue);
+        --toogle-active-color: var(--black);
     }
 } 
 /* End White Theme */
@@ -2045,10 +2045,11 @@ div.graph--bar-group {
     margin: 0.5em auto;
     border-radius: 1em;
     border: 0.3em solid var(--toogle-inactive-color);
+    transition: .4s;
 
     .toggle {
         position: absolute;
-        top: 0.2em;
+        top: 0.24em;
         left: 0.2em;
         width: 1em;
         height: 1em;
