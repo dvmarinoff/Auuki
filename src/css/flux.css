@@ -2045,7 +2045,6 @@ div.graph--bar-group {
     margin: 0.5em auto;
     border-radius: 1em;
     border: 0.3em solid var(--toogle-inactive-color);
-    transition: .4s;
 
     .toggle {
         position: absolute;
@@ -2055,7 +2054,6 @@ div.graph--bar-group {
         height: 1em;
         background-color: var(--toogle-inactive-color);
         border-radius: 50%;
-        transition: .4s;
     }
 
     &.active {
