@@ -2368,6 +2368,7 @@ workout-graph-svg {
 }
 .sound--control {
     cursor: pointer;
+    fill: var(--foreground-color);
 }
 
 .sound--volume {
