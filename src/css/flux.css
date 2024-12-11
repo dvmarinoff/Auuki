@@ -2054,6 +2054,7 @@ div.graph--bar-group {
         height: 1em;
         background-color: var(--toogle-inactive-color);
         border-radius: 50%;
+        transition: .4s;
     }
 
     &.active {
