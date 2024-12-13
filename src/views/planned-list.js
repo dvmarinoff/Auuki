@@ -17,7 +17,6 @@ class PlannedList extends HTMLElement {
         this.viewModel = new WorkoutGraphViewModel({item: ':planned'});
     }
     connectedCallback() {
-        console.log(`PlannedList connectedCallback`);
         const self = this;
         this.abortController = new AbortController();
         this.signal = { signal: self.abortController.signal };
@@ -32,7 +31,6 @@ class PlannedList extends HTMLElement {
         this.render();
     }
     disconnectedCallback() {
-        console.log(`PlannedList diconnectedCallback`);
         this.abortController.abort();
     }
     onAction(action) {
@@ -42,11 +40,11 @@ class PlannedList extends HTMLElement {
             return;
         }
         if(action === ':intervals:wod') {
-            models.planned.wod('intervals');
+            this.model.wod('intervals');
             return;
         }
         if(action === ':trainingPeaks:wod') {
-            models.planned.wod('trainingPeaks');
+            this.model.wod('trainingPeaks');
             return;
         }
     }
@@ -102,7 +100,7 @@ class PlannedList extends HTMLElement {
     toList() {
         const self = this;
         let list = '';
-        const planned = models.planned.list();
+        const planned = this.model.list();
         for(let workout of planned) {
             list += self.toListItem(workout, self.ftp, self.size);
         }
@@ -116,7 +114,7 @@ class PlannedList extends HTMLElement {
     render() {
         const self = this;
 
-        console.log(`Planned List render ${models.planned.data.length}, visible: ${this.checkVisibility()}`);
+        console.log(`Planned List render ${this.model.data.workouts.length}, visible: ${this.checkVisibility()}`);
 
         if(this.checkVisibility()) {
             self.size = self.getSize();
@@ -142,7 +140,6 @@ class PlannedListItem extends HTMLElement {
         this.isOptions = false;
     }
     connectedCallback() {
-        console.log(`:planned-list-item :connectedCallback`);
         const self = this;
         this.abortController = new AbortController();
         this.signal = { signal: self.abortController.signal };
@@ -158,7 +155,6 @@ class PlannedListItem extends HTMLElement {
         xf.sub('db:workout',  self.onWorkout.bind(self), self.signal);
     }
     disconnectedCallback() {
-        console.log(`:planned-list-item :disconnectedCallback`);
         this.abortController.abort();
     }
     onAction(action) {

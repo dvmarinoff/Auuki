@@ -12,6 +12,7 @@ class Watch extends HTMLElement {
         this.dom = {
             start:   document.querySelector('#watch-start'),
             pause:   document.querySelector('#watch-pause'),
+            back:    document.querySelector('#watch-back'),
             lap:     document.querySelector('#watch-lap'),
             stop:    document.querySelector('#watch-stop'),
             save:    document.querySelector('#activity-save'),
@@ -20,6 +21,7 @@ class Watch extends HTMLElement {
 
         this.dom.start.addEventListener('pointerup', this.onStart, this.signal);
         this.dom.pause.addEventListener('pointerup', this.onPause, this.signal);
+        this.dom.back.addEventListener('pointerup', this.onBack, this.signal);
         this.dom.lap.addEventListener('pointerup', this.onLap, this.signal);
         this.dom.stop.addEventListener('pointerup', this.onStop, this.signal);
         // this.dom.workout.addEventListener('pointerup', this.onWorkoutStart);
@@ -38,6 +40,7 @@ class Watch extends HTMLElement {
         xf.dispatch('ui:workoutStart');
     }
     onPause(e) { xf.dispatch('ui:watchPause'); }
+    onBack(e)  { xf.dispatch('ui:watchBack'); }
     onLap(e)   { xf.dispatch('ui:watchLap'); }
     onStop(e)  { xf.dispatch('ui:watchStop'); }
     onSave(e)  { xf.dispatch('ui:activity:save'); }
@@ -56,27 +59,32 @@ class Watch extends HTMLElement {
         dom.stop.style.display  = 'none';
         dom.save.style.display  = 'none';
         dom.lap.style.display   = 'none';
+        dom.back.style.display  = 'none';
     };
     renderStarted(dom) {
-        dom.start.style.display = 'none';
-        dom.save.style.display  = 'none';
-        dom.pause.style.display = 'inline-block';
-        dom.lap.style.display   = 'inline-block';
-        dom.stop.style.display  = 'none';
+        dom.start.style.display  = 'none';
+        dom.save.style.display   = 'none';
+        dom.pause.style.display  = 'inline-block';
+        dom.lap.style.display    = 'inline-block';
+        dom.back.style.display   = 'inline-block';
+        dom.stop.style.display   = 'none';
         // dom.stop.style.display  = 'inline-block';
     };
     renderPaused(dom) {
-        dom.pause.style.display = 'none';
-        dom.start.style.display = 'inline-block';
-        dom.stop.style.display  = 'inline-block';
+        dom.pause.style.display    = 'none';
+        // dom.back.style.display = 'none';
+        dom.lap.style.display      = 'none';
+        dom.start.style.display    = 'inline-block';
+        dom.stop.style.display     = 'inline-block';
     };
     renderStopped(dom) {
-        dom.pause.style.display   = 'none';
-        dom.lap.style.display     = 'none';
-        dom.stop.style.display    = 'none';
-        dom.save.style.display    = 'inline-block';
+        dom.pause.style.display  = 'none';
+        dom.lap.style.display    = 'none';
+        dom.back.style.display   = 'none';
+        dom.stop.style.display   = 'none';
+        dom.save.style.display   = 'inline-block';
         // dom.workout.style.display = 'inline-block';
-        dom.start.style.display   = 'inline-block';
+        dom.start.style.display  = 'inline-block';
     };
     renderWorkoutStarted(dom) {
         // dom.workout.style.display = 'none';
