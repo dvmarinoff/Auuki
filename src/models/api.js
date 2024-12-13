@@ -6,43 +6,53 @@ import Intervals from './intervals.js';
 import TrainingPeaks from './training-peaks.js';
 import Auth from './auth.js';
 
-function Config() {
-    // TODO:
-    var process = process ?? {
-        env: {
+
+
+class Config {
+    #defaultStravaClientId = 0;
+    #defaultIntervalsClientId = 0;
+    #defaultTrainingPeaksClientId = 0;
+
+    constructor() {
+        this.env = {
             API_URI: "http://localhost:8080",
             PWA_URI: "http://localhost:1234",
-            STRAVA_CLIENT_ID: 0,
-            INTERVALS_CLIENT_ID: 0,
-            TRAINING_PEAKS_CLIENT_ID: 0,
-        }
-    };
-
-    return {
-        API_URI: process.env.API_URI,
-        PWA_URI: process.env.PWA_URI,
-        STRAVA_CLIENT_ID: process.env.STRAVA_CLIENT_ID,
-        INTERVALS_CLIENT_ID: process.env.INTERVALS_CLIENT_ID,
-        TRAINING_PEAKS_CLIENT_ID: process.env.TRAINING_PEAKS_CLIENT_ID,
-    };
+            STRAVA_CLIENT_ID: this.defaultStravaClientId,
+            INTERVALS_CLIENT_ID: this.defaultIntervalsClientId,
+            TRAINING_PEAKS_CLIENT_ID: this.defaultTrainingPeaksClientId,
+        };
+    }
+    setServices(args = {}) {
+        this.env.STRAVA_CLIENT_ID = args.strava ?? this.defaultStravaClientId;
+        this.env.INTERVALS_CLIENT_ID = args.intervals ?? this.defaultIntervalsClientId;
+        this.env.TRAINING_PEAKS_CLIENT_ID = args.trainingPeaks ?? this.defaultTrainingPeaksClientId;
+        Object.freeze(this.env);
+    }
+    get() {
+        return this.env;
+    }
 }
 
 // TODO:
 // - call status() first than handle params and other routing
 // - setup service config after status()
 function API() {
-    const config = Config();
-    const api_uri = config.API_URI;
-    const pwa_uri = config.PWA_URI;
-    const strava_client_id = config.STRAVA_CLIENT_ID;
-    const intervals_client_id = config.INTERVALS_CLIENT_ID;
-    const training_peaks_client_id = config.TRAINING_PEAKS_CLIENT_ID;
+    const config = new Config();
+    const env = config.get();
+    const api_uri = env.API_URI;
+    const pwa_uri = env.PWA_URI;
+    const strava_client_id = env.STRAVA_CLIENT_ID;
+    const intervals_client_id = env.INTERVALS_CLIENT_ID;
+    const training_peaks_client_id = env.TRAINING_PEAKS_CLIENT_ID;
 
-    const auth = Auth({config});
-    const strava = Strava({config});
-    const intervals = Intervals({config});
-    const trainingPeaks = TrainingPeaks({config});
-    const router = Router({handlers: {strava, intervals, trainingPeaks, auth}});
+    const auth = Auth({config: env});
+    const strava = Strava({config: env});
+    const intervals = Intervals({config: env});
+    const trainingPeaks = TrainingPeaks({config: env});
+    const router = Router({
+        config,
+        handlers: {strava, intervals, trainingPeaks, auth},
+    });
 
     function start() {
         router.start();
@@ -70,6 +80,8 @@ function Router(args = {}) {
 
     async function start() {
         const status = await auth.status();
+        console.log(`:status `, status);
+        args.config.setServices(status.services);
 
         const params = getParams();
         if(hasParams(params)) {

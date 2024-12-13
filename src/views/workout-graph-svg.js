@@ -12,6 +12,7 @@ class WorkoutGraphViewModel {
         this.yOutRange = {min: 0, max: self.calcYOutRangeMax(self.px)};
         this.xInRange = {min: 0, max: 1};
         this.yInRange = {min: 0, max: 1};
+        this.powerMin = 0.1;
     }
     translate(value, inRange, outRange) {
         const inSpan = inRange.max - inRange.min;
@@ -77,7 +78,6 @@ class WorkoutGraphViewModel {
         let graphWidth = window.innerWidth;
         if(size) {
             self.yOutRange.max = size.height;
-            graphWidth = size.width;
         }
         this.xOutRange.max = graphWidth;
         this.xInRange.max = data?.meta?.duration;
@@ -95,17 +95,19 @@ class WorkoutGraphViewModel {
         let   x3 = self.xOutRange.min;
         const y3 = self.yOutRange.min;
 
-        let heightStart = self.yOutRange.min;
-        let heightEnd   = self.yOutRange.min;
-        let powerStart  = 0;
-        let powerEnd    = 0;
-        let width       = 0;
+        let heightStart        = self.yOutRange.min;
+        let heightEnd          = self.yOutRange.min;
+        let powerStartRelative = this.powerMin;
+        let powerEndRelative   = this.powerMin;
+        let powerStart         = 0;
+        let powerEnd           = 0;
+        let width              = 0;
 
         const initialInterval = {duration: 0, steps: [{duration: 0, power: 0}]};
         const initialStep = initialInterval.steps[0];
         let stepPrev = initialStep;
         let points = '';
-        let color  = '#328AFF';
+        let color  = '#328AFF'; // from css var(--zone-blue)
 
         // accumulators
         let accX = 0;
@@ -115,12 +117,20 @@ class WorkoutGraphViewModel {
             let intervalPrev = (i === 0) ? initialInterval : intervals[i-1];
             let interval     = intervals[i];
 
-            // TODO: handle ramps zone change
+            // TODO: handle ramps zone change, maybe with
+            // - a mask
+            // - a nested polygon element for each color change
             // for(let j = 0; j < interval.steps.length; j++) {
             // }
 
-            powerStart = models.ftp.toAbsolute(first(interval.steps)?.power, ftp);
-            powerEnd = models.ftp.toAbsolute(last(interval.steps)?.power, ftp);
+            powerStartRelative = Math.max(
+                first(interval.steps)?.power ?? 0, this.powerMin
+            );
+            powerEndRelative = Math.max(
+                last(interval.steps)?.power ?? 0, this.powerMin
+            );
+            powerStart = models.ftp.toAbsolute(powerStartRelative, ftp);
+            powerEnd = models.ftp.toAbsolute(powerEndRelative, ftp);
 
             accX += intervalPrev.duration;
 
@@ -151,8 +161,6 @@ class WorkoutGraphViewModel {
                              duration="${info.duration}" />`;
         }
 
-        // width="graphWidth"
-        // height="${this.yOutRange.max}"
         return `
             <svg
                 class="workout--graph"

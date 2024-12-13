@@ -1192,10 +1192,9 @@ class ViewAction extends HTMLElement {
 
         this.addEventListener(on, (e) => {
             if(stopPropagation) {
-                // console.log(`stop propagation`);
                 e.stopPropagation();
             }
-            console.log(`action${topic}`, action, stopPropagation);
+            // console.log(`action${topic}`, action, stopPropagation);
             xf.dispatch(`action${topic}`, action);
         }, this.signal);
     }
@@ -1580,4 +1579,3 @@ export {
 
     DockModeBtn,
 }
-

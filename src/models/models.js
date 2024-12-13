@@ -733,6 +733,10 @@ class Workouts extends Model {
     }
 }
 
+function yesterdayOrOlder(timestamp) {
+    return new Date().getDate() - new Date(timestamp).getDate() > 0;
+}
+
 // TODO:
 // - standardize the methods
 class Planned {
@@ -773,12 +777,17 @@ class Planned {
         return this.data.workouts.length === 0;
     }
     restore() {
-        // TODO:
-        // store the data with a timestamp,
-        // if it is older than 00:00 refresh the data once
-        // if there are no workouts fallback to []
         console.log(':planned :restore');
+
         this.data = this.storage.restore();
+
+        if(yesterdayOrOlder(this.data.modified.intervals)) {
+            console.log(`:planned :outdated :calling :wod 'intervals'`);
+            this.wod('intervals');
+            return;
+        }
+
+        console.log(`:planned :up-to-date`);
         xf.dispatch(`action:planned`, ':data');
     }
     backup() {
@@ -789,9 +798,8 @@ class Planned {
     async wod(service) {
         const self = this;
         if(service === 'intervals') {
-            const response = await api.intervals.wodMock();
+            const response = await api.intervals.wod();
             const workouts = self.workoutModel.fromIntervalsResponse(response);
-            console.log(workouts);
 
             this.setWorkouts(workouts);
             this.setModified(service);

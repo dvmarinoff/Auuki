@@ -285,6 +285,27 @@ class Watch {
         }
         return undefined;
     }
+    back() {
+        const self = this;
+
+        if(self.isWorkoutStarted()) {
+            let i             = self.intervalIndex;
+            let s             = self.stepIndex;
+            let intervals     = self.intervals;
+            let lessIntervals = (i - 1) >= 0;
+
+            if(lessIntervals) {
+                i -= 1;
+                s  = 0;
+
+                self.nextInterval(intervals, i, s);
+                self.nextStep(intervals, i, s);
+            }
+        } else {
+            xf.dispatch('watch:lap');
+            xf.dispatch('watch:lapTime', 0);
+        }
+    }
 
     isDurationStep(intervals, intervalIndex, stepIndex) {
         return exists(intervals[intervalIndex].steps[stepIndex].duration);
@@ -446,6 +467,7 @@ xf.sub('workout:restore', e => { watch.restoreWorkout(); });
 xf.sub('ui:watchPause',   e => { watch.pause();          });
 xf.sub('ui:watchResume',  e => { watch.resume();         });
 xf.sub('ui:watchLap',     e => { watch.lap();            });
+xf.sub('ui:watchBack',    e => { watch.back();           });
 xf.sub('ui:watchStop',    e => {
     const stop = confirm('Confirm Stop?');
     if(stop) {
