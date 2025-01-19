@@ -1391,6 +1391,7 @@ const measurement = new Measurement({prop: 'measurement', storage: LocalStorageI
 const dataTileSwitch = new DataTileSwitch({prop: 'dataTileSwitch', storage: LocalStorageItem});
 
 const power1s = new PropInterval({prop: 'db:power', effect: 'power1s', interval: 1000});
+const power3s = new PropInterval({prop: 'db:power', effect: 'power3s', interval: 3000});
 const powerInZone = new PowerInZone({ftpModel: ftp});
 
 const activity = new Activity({prop: 'activity', api: api});
@@ -1412,6 +1413,7 @@ let models = {
     virtualState,
 
     power1s,
+    power3s,
     powerLap,
     powerAvg,
     powerInZone,

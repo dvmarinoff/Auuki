@@ -114,6 +114,7 @@ class WorkoutGraph extends HTMLElement {
     connectedCallback() {
         const self = this;
         this.dom = {};
+        this.$graphCont = document.querySelector('#graph-workout') ?? this;
         this.viewPort = this.getViewPort();
         this.abortController = new AbortController();
         this.signal = { signal: self.abortController.signal };
@@ -123,6 +124,7 @@ class WorkoutGraph extends HTMLElement {
                 self.onWindowResize.bind(this), 300, {trailing: true, leading: false},
             ),
         };
+
 
         xf.sub(`db:workout`, this.onWorkout.bind(this), this.signal);
         xf.sub(`db:ftp`, this.onFTP.bind(this), this.signal);
@@ -135,13 +137,15 @@ class WorkoutGraph extends HTMLElement {
 
         this.addEventListener('mouseover', this.onHover.bind(this), this.signal);
         this.addEventListener('mouseout', this.onMouseOut.bind(this), this.signal);
-        window.addEventListener('resize', this.debounced.onWindowResize.bind(this), this.signal);
+        // window.addEventListener('resize', this.debounced.onWindowResize.bind(this), this.signal);
+        window.addEventListener('resize', this.onWindowResize.bind(this), this.signal);
     }
     disconnectedCallback() {
         this.abortController.abort();
     }
     getViewPort() {
-        const rect = this.getBoundingClientRect();
+        // const rect = this.getBoundingClientRect();
+        const rect = this.$graphCont.getBoundingClientRect();
 
         return {
             width: rect.width,

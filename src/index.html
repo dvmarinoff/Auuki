@@ -78,12 +78,24 @@
                             </div>
 
                             <div class="data-tile" id="data-tile--power">
-                                    <h2 class="data-tile--heading">Power</h2>
-                                    <div class="data-tile--value-cont">
-                                        <power-value id=power-value"
-                                                        class="data-tile--value"
-                                                        prop="db:power1s">--</power-value>
-                                    </div>
+                                <z-stack>
+                                    <z-stack-item class="active">
+                                        <h2 class="data-tile--heading">Power</h2>
+                                        <div class="data-tile--value-cont">
+                                            <power-value id=power-value"
+                                                         class="data-tile--value"
+                                                         prop="db:power1s">--</power-value>
+                                        </div>
+                                    </z-stack-item>
+                                    <z-stack-item>
+                                        <h2 class="data-tile--heading">Power 3s</h2>
+                                        <div class="data-tile--value-cont">
+                                            <power-value id=power-value-3s"
+                                                         class="data-tile--value"
+                                                         prop="db:power3s">--</power-value>
+                                        </div>
+                                    </z-stack-item>
+                                </z-stack>
                             </div>
 
                             <div class="data-tile" id="data-tile--interval-time">

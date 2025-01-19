@@ -27,6 +27,7 @@ let db = {
     ascent: models.virtualState.ascent,
 
     power1s: models.power1s.default,
+    power3s: models.power3s.default,
     powerInZone: models.powerInZone.default,
 
     powerLap: models.powerLap.default,
@@ -159,6 +160,10 @@ xf.reg('power1s', (power, db) => {
 
     db.powerLapCount = models.powerLap.count;
     db.powerAvgCount = models.powerAvg.count;
+});
+
+xf.reg('power3s', (power, db) => {
+    db.power3s = power;
 });
 
 xf.reg('powerInZone', (powerInZone, db) => {
