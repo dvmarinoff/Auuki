@@ -2218,7 +2218,7 @@ navigation-action {
         height: 3rem;
         color: var(--dark);
         background-color: #fff;
-        border: 1px solid var(--background-color);
+        border: 1px solid var(--background-color-2);
     }
     .btn {
         margin: 1rem 0;
