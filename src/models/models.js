@@ -338,7 +338,11 @@ class FTP extends Model {
     }
     toAbsolute(value, ftp) {
         const self = this;
-        if(value < self.minAbsValue) return parseInt(value * (ftp ?? self.state));
+        if(value < self.minAbsValue) {
+            const roundedUpValue = Math.round(value * 100) / 100; // round up to second position after decimal point
+            const absolute = Math.round(roundedUpValue * (ftp ?? self.state));
+            return absolute;
+        }
         return value;
     }
     powerToZone(value, ftp, zones) {
@@ -754,6 +758,7 @@ class Planned {
         const self = this;
         this.data = this.defaultValue();
         this.workoutModel = args.workoutModel;
+        this.athlete = {};
         this.storage = LocalStorageItem({
             key: 'planned',
             encode: JSON.stringify,
@@ -803,7 +808,7 @@ class Planned {
         this.storage.set(this.data);
         xf.dispatch(`action:planned`, ':data');
     }
-    // forse refresh the wod data
+    // force refresh the wod data
     async wod(service) {
         const self = this;
         if(service === 'intervals') {
@@ -817,6 +822,19 @@ class Planned {
             if(!this.isEmpty()) {
                 const id = first(this.data.workouts).id;
                 xf.dispatch(`action:li:${id}`, ':select');
+            }
+        }
+    }
+    async getAthlete(service) {
+        const self = this;
+        if(service === 'intervals') {
+            const response = await api.intervals.getAthlete();
+            console.log(response);
+            if(response.weight > 0) {
+                xf.dispatch('ui:weight-set', response.weight);
+            }
+            if(response.ftp > 0) {
+                xf.dispatch('ui:ftp-set', response.ftp);
             }
         }
     }
