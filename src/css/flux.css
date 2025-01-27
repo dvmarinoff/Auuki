@@ -441,6 +441,7 @@ input {
 svg {
     fill: var(--foreground-color)
 }
+
 .chrome-bg {
     background-color: var(--background-color-2);
 }
@@ -2217,7 +2218,7 @@ navigation-action {
         height: 3rem;
         color: var(--dark);
         background-color: #fff;
-        border-color: var(--border-color);
+        border: 1px solid var(--background-color);
     }
     .btn {
         margin: 1rem 0;
