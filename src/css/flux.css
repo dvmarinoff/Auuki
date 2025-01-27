@@ -1770,7 +1770,7 @@ navigation-action {
     grid-template-columns: 10% repeat(6, 15%);
 
     input {
-        color: #fff;
+        color: var(--foreground-color);
     }
 }
 
