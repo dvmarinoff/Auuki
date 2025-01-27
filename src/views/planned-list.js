@@ -49,6 +49,7 @@ class PlannedList extends HTMLElement {
         }
         if(action === ':intervals:wod') {
             this.model.wod('intervals');
+            this.model.getAthlete('intervals');
             this.onLoading(this.$indicatorIntervals);
             return;
         }
@@ -57,6 +58,13 @@ class PlannedList extends HTMLElement {
         }
         if(action === ':intervals:wod:fail') {
             this.onFail(this.$indicatorIntervals);
+        }
+
+        if(action === ':intervals:athlete:sucess') {
+            console.log(':intervals:athlete:sucess');
+        }
+        if(action === ':intervals:athlete:fail') {
+            console.log(':intervals:athlete:fail');
         }
 
         if(action === ':trainingPeaks:wod') {

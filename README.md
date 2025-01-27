@@ -1,3 +1,5 @@
+<img alt="Auuki Indoor Cyling app for Structured Training" src="doc/images/github-project-header.png" />
+
 # Auuki
 
 Auuki is an App for executing structured workouts on a smart trainer.
@@ -15,22 +17,6 @@ The web version is free to use and open source. It is developed as a static PWA,
 Everything happens in your Browser and stays in there. It uses Web Bluetooth, Web Serial, Web Components, IndexDB, Local Storage, WakeLock API.
 
 _Status_: Currently working on creating a backend API and iOS app.
-
-## Screenshots
-
-<table>
-  <tr>
-     <td>
-       <img alt="Home Page" width="320px" src="doc/images/home-page.jpg" />
-     </td>
-     <td>
-       <img alt="Workouts Page" width="320px" src="doc/images/workouts-page.jpg" />
-     </td>
-     <td>
-       <img alt="Settings-page" width="320px" src="doc/images/settings-page.jpg" />
-     </td>
-  </tr>
-</table>
 
 ## Supported Browsers
 
