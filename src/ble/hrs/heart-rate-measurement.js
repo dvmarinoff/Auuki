@@ -15,12 +15,33 @@ function readHeartRate(dataview) {
     return dataview['get' + datatype](1, true);
 }
 
+function readRRInterval(dataview) {
+    let i = 0;
+    const flags = dataview.getUint8(0, true);
+    const datatype = 'Uint16';
+    i = heartRateFormat(flags) ? 3 : 2;
+    i = i+inContact(flags);
+    diffLenght = dataview.buffer.byteLength - i;
+    if (rrInterval(flags)) {
+        let rrIntervals = [];
+        for(i; i < dataview.buffer.byteLength; i=i+2){
+            let value = dataview.getUint16(i, true);
+            rrIntervals.push(value);
+        }
+        return rrIntervals;
+    } else {
+        return undefined
+    }
+}
+
 function HeartRateMeasurement(args = {}) {
 
     function decode(dataview) {
-        return {
-            heartRate: readHeartRate(dataview)
+        const decoded = {
+            heartRate: readHeartRate(dataview),
+            rrInterval: readRRInterval(dataview)
         };
+        return decoded;
     }
 
     return Object.freeze({
