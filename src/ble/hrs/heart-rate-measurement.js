@@ -21,7 +21,6 @@ function readRRInterval(dataview) {
     const datatype = 'Uint16';
     i = heartRateFormat(flags) ? 3 : 2;
     i = i+inContact(flags);
-    diffLenght = dataview.buffer.byteLength - i;
     if (rrInterval(flags)) {
         let rrIntervals = [];
         for(i; i < dataview.buffer.byteLength; i=i+2){
