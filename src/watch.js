@@ -401,8 +401,9 @@ xf.reg('watch:elapsed', (x, db) => {
                   db.speed :
                   db.speedVirtual;
 
+    const timestampNow = Date.now();
     const record = {
-        timestamp:  Date.now(),
+        timestamp:  timestampNow,
         power:      db.power1s,
         cadence:    db.cadence,
         speed:      speed,
@@ -418,6 +419,13 @@ xf.reg('watch:elapsed', (x, db) => {
         skin_temperature:             db.skinTemperature,
         device_index:                 0,
     };
+
+    const hrv = {
+        timestamp: timestampNow,
+        hrv: db.rrIntervals,
+    };
+
+    db.hrvs.push(hrv);
 
     db.records.push(record);
     db.lap.push(record);

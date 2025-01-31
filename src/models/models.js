@@ -90,6 +90,16 @@ class HeartRate extends Model {
     }
 }
 
+class RRIntervals extends Model {
+    postInit(args = {}) {
+    }
+    defaultValue() { return []; }
+    defaultIsValid(value) {
+        const self = this;
+        return Array.isArray(value) && value.length > 0 && value.every(Number.isInteger);
+    }
+}
+
 class Cadence extends Model {
     postInit(args = {}) {
         this.min = existance(args.min, 0);
@@ -571,11 +581,13 @@ class Activity extends Model {
     }
     encode(db) {
         const records = db.records;
+        const hrvs = db.hrvs;
         const laps = db.laps;
         const events = db.events;
 
         return fit.localActivity.encode({
             records,
+            hrvs,
             laps,
             events,
         });
@@ -655,9 +667,11 @@ class Workout extends Model {
         const records = db.records;
         const laps = db.laps;
         const events = db.events;
+        const hrvs = db.hrvs;
 
         return fit.localActivity.encode({
             records,
+            hrvs,
             laps,
             events,
         });
@@ -888,6 +902,7 @@ function Session(args = {}) {
 
             // Recording
             records: db.records,
+            hrvs: db.hrvs,
             laps: db.laps,
             events: db.events,
             lap: db.lap,
@@ -1386,6 +1401,7 @@ const api = API();
 const power = new Power({prop: 'power'});
 const cadence = new Cadence({prop: 'cadence'});
 const heartRate = new HeartRate({prop: 'heartRate'});
+const rrIntervals = new RRIntervals({prop: 'rrInterval'});
 const speed = new Speed({prop: 'speed'});
 const smo2 = new SmO2({prop: 'smo2'});
 const thb = new THb({prop: 'thb'});
@@ -1422,6 +1438,7 @@ const session = Session();
 let models = {
     power,
     heartRate,
+    rrIntervals,
     cadence,
     speed,
     smo2,

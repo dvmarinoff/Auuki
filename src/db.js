@@ -11,6 +11,7 @@ let db = {
     // Data Screen
     power: models.power.default,
     heartRate: models.heartRate.default,
+    rrIntervals: models.rrIntervals.default,
     cadence: models.cadence.default,
     speed: models.speed.default,
     sources: models.sources.default,
@@ -75,6 +76,7 @@ let db = {
 
     // Recording
     records: [],
+    hrvs: [],
     lap: [],
     laps: [],
     events: [],
@@ -111,6 +113,9 @@ xf.reg(models.heartRate.prop, (heartRate, db) => {
     db.heartRateAvg = models.heartRateAvg.setState(heartRate);
     db.heartRateLapCount = models.heartRateLap.count;
     db.heartRateAvgCount = models.heartRateAvg.count;
+});
+xf.reg(models.rrIntervals.prop, (rrIntervals, db) => {
+    db.rrIntervals = rrIntervals;
 });
 
 xf.reg(models.power.prop, (power, db) => {
@@ -321,6 +326,7 @@ xf.reg('activity:save:success', (e, db) => {
     // file:download:activity
     // reset db session:
     db.records = [];
+    db.hrvs = [];
     db.events = [];
     db.laps = [];
     db.resistanceTarget = 0;
