@@ -231,13 +231,19 @@ class WorkoutGraph extends HTMLElement {
             $dom.active.style.left   = `${left % width}px`;
             $dom.active.style.width  = `2px`;
             $dom.active.style.height = `${height}px`;
+
+            if(equals(this.type, 'course')) {
+                $dom.progress.style.left   = `${left % width}px`;
+            }
         }
         return;
     }
     onLapTime(lapTime) {
         const self = this;
         this.lapTime = lapTime;
+        if(equals(this.type, 'workout')) {
         this.progress({index: self.index, dom: self.dom, parent: self, lapTime: self.lapTime});
+    }
     }
     progress(args = {}) {
         if(this.workoutStatus === "done") {
