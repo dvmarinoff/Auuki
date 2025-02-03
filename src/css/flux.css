@@ -2218,7 +2218,7 @@ navigation-action {
         height: 3rem;
         color: var(--dark);
         background-color: #fff;
-        border: 1px solid var(--background-color-2);
+        border: none;
     }
     .btn {
         margin: 1rem 0;
@@ -2304,6 +2304,23 @@ navigation-action {
 }
 #profile.active {
     display: block;
+}
+
+@media (prefers-color-scheme: light) {
+    body.auto-theme {
+        .auth, .profile {
+            .input {
+                border: 1px solid var(--border-color);
+            }
+        }
+    }
+}
+body.white-theme {
+    .auth, .profile {
+        .input {
+            border: 1px solid var(--border-color);
+        }
+    }
 }
 
 /* App Connections */
