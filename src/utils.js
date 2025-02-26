@@ -59,7 +59,7 @@ function time() {
 function isoDate(date = new Date()) {
     const offset = date.getTimezoneOffset();
     const d = new Date(date.getTime() - (offset*60*1000));
-    return date.toISOString().split('T')[0];
+    return d.toISOString().split('T')[0];
 }
 
 function format(x, precision = 1000) {
