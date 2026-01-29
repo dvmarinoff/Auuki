@@ -910,6 +910,7 @@ div.graph--bar-group {
     background-color: var(--white);
     border-radius: 0.2em;
     z-index: 2;
+    pointer-events: none;
 }
 
 /* #graph-moxy { */
