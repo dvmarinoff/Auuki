@@ -411,6 +411,7 @@ xf.reg('watch:stepIndex',     (index, db) => {
     const slopeTarget    = db.workout.intervals[intervalIndex].steps[index].slope;
     const cadenceTarget  = db.workout.intervals[intervalIndex].steps[index].cadence;
     const distanceTarget = db.workout.intervals[intervalIndex].steps[index].distance;
+    const intensity      = existance(db.intensity, 100) / 100;
 
     if(exists(slopeTarget)) {
         xf.dispatch('ui:slope-target-set', slopeTarget);
@@ -427,12 +428,23 @@ xf.reg('watch:stepIndex',     (index, db) => {
         xf.dispatch('ui:cadence-target-set', 0);
     }
     if(exists(powerTarget)) {
-        xf.dispatch('ui:power-target-set', models.ftp.toAbsolute(powerTarget, db.ftp));
+        xf.dispatch('ui:power-target-set', models.ftp.toAbsolute(powerTarget, db.ftp) * intensity);
         if(!exists(slopeTarget) && !equals(db.mode, ControlMode.erg)) {
             xf.dispatch('ui:mode-set', ControlMode.erg);
         }
     } else {
         xf.dispatch('ui:power-target-set', 0);
+    }
+});
+xf.reg('watch:intensity', (intensity, db) => {
+    db.intensity = intensity;
+    const intervalIndex  = db.intervalIndex;
+    const stepIndex      = db.stepIndex;
+    const powerTarget    = db.workout?.intervals?.[intervalIndex]?.steps?.[stepIndex]?.power;
+
+    if(exists(powerTarget)) {
+        const i = existance(db.intensity, 100) / 100;
+        xf.dispatch('ui:power-target-set', models.ftp.toAbsolute(powerTarget, db.ftp) * i);
     }
 });
 xf.reg('workout:started', (x, db) => db.workoutStatus = 'started');

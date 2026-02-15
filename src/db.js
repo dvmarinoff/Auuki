@@ -55,6 +55,7 @@ let db = {
     cadenceTarget: models.cadenceTarget.default,
 
     mode: models.mode.default,
+    intensity: models.intensity.default,
     page: models.page.default,
     lock: false,
 
@@ -283,6 +284,10 @@ xf.reg(`ui:slope-target-dec`, (_, db) => {
 xf.reg('ui:ftp-set', (ftp, db) => {
     db.ftp = models.ftp.set(ftp);
     models.ftp.backup(db.ftp);
+});
+xf.reg('ui:intensity-set', (value, db) => {
+    db.intensity = models.intensity.set(value);
+    xf.dispatch('watch:intensity', db.intensity);
 });
 xf.reg('ui:weight-set', (weight, db) => {
     db.weight = models.weight.set(weight);

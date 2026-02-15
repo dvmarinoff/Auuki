@@ -1,3 +1,5 @@
+import { customWorkouts } from './custom-workouts.js';
+
 let workouts = [
         `<workout_file>
     <author>Marinov</author>
@@ -494,6 +496,6 @@ let workouts = [
         <SteadyState Duration="60" Power="2.02" />
     </workout>
 </workout_file>`,
-];
+].concat(customWorkouts);
 
 export { workouts };

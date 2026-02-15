@@ -321,6 +321,19 @@ class Page extends Model {
     defaultIsValid(value) { return this.values.includes(value); }
 }
 
+class WorkoutIntensity extends Model {
+    postInit(args = {}) {
+        this.min = existance(args.min, 50);
+        this.max = existance(args.max, 150);
+        this.step = existance(args.step, 1);
+    }
+    defaultValue() { return 100; }
+    defaultIsValid(value) {
+        const self = this;
+        return Number.isInteger(value) && inRange(self.min, self.max, value);
+    }
+}
+
 class FTP extends Model {
     postInit(args = {}) {
         const self = this;
@@ -1585,6 +1598,7 @@ const slopeTarget = new SlopeTarget({prop: 'slopeTarget'});
 const cadenceTarget = new CadenceTarget({prop: 'cadenceTarget'});
 const mode = new Mode({prop: 'mode'});
 const page = new Page({prop: 'page'});
+const intensity = new WorkoutIntensity({prop: 'intensity'});
 
 const ftp = new FTP({prop: 'ftp', storage: LocalStorageItem});
 const weight = new Weight({prop: 'weight', storage: LocalStorageItem});
@@ -1634,6 +1648,7 @@ let models = {
     slopeTarget,
     cadenceTarget,
 
+    intensity,
     mode,
     page,
     ftp,

@@ -54,22 +54,97 @@ function Interval(acc, interval, width, ftp, powerMax, viewPort) {
     }, `<div class="graph--bar-group" style="width: ${width}px;">`) + `</div>`;
 }
 
-function intervalsToGraph(workout, ftp, viewPort) {
+
+function intervalsToGraph(workout, ftp, viewPort, intensity = 100) {
     const totalWidth    = viewPort.width;
     const intervals     = workout.intervals;
-    const totalDuration = workout.meta.duration;
-    const maxPower      = intervalsToMaxPower(intervals, ftp);
+    const totalDuration = workout.meta.duration; // in seconds
+    const intensityFactor = intensity / 100;
+    
+    // Helper to calculate target power for a step based on intensity
+    const getTargetPower = (stepPower) => {
+        // models.ftp.toAbsolute converts relative (0.5) to watts (100W if FTP=200)
+        // or keeps absolute (150) as watts.
+        // Then apply intensity factor.
+        return Math.round(models.ftp.toAbsolute(stepPower, ftp) * intensityFactor);
+    };
 
-    return intervals.reduce((acc, interval) => {
+    // Calculate max power for scaling
+    // Use a base max that scales with intensity too, or stick to raw max power in workout.
+    let maxPower = intervals.reduce((highest, interval) => {
+        interval.steps.forEach((step) => {
+            const power = getTargetPower(step.power);
+            if(power > highest) highest = power;
+        });
+        return highest;
+    }, 0);
+    
+    // Ensure graph has headroom above max power or FTP, whichever is higher
+    const currentFtp = Math.round(ftp * intensityFactor);
+    maxPower = Math.max(maxPower, currentFtp * 1.5);
+
+    // Generate Graph Bars
+    const barsHtml = intervals.reduce((acc, interval) => {
         let width = 1;
 
         if(exists(interval.duration)) {
             width = intervalToWidth(interval.duration, totalDuration, totalWidth);
-            return Interval(acc, interval, width, ftp, maxPower, viewPort);
-        }
+            const stepsLength = interval.steps.length;
+            
+            // Build inner HTML for this interval group
+            const groupInner = interval.steps.reduce((a, step) => {
+                const targetPower = getTargetPower(step.power);
+                const height      = powerToHeight(targetPower, maxPower, viewPort);
+                const stepWidth   = 100 / stepsLength;
+                
+                // Color zone based on adjusted power relative to user's real FTP base capability
+                // (High intensity workout might push you into red zone constantly)
+                const zoneInfo = models.ftp.powerToZone(targetPower, ftp);
+                const zoneClass = `zone-${zoneInfo.name}`;
+                
+                const timeStr = formatTime({value: step.duration, format: 'mm:ss'});
+                
+                // Attributes for tooltip/hover
+                const attrs = [
+                    `power="${targetPower}"`,
+                    exists(step.cadence) ? `cadence="${step.cadence}"` : '',
+                    exists(step.slope) ? `slope="${step.slope}"` : '',
+                    `duration="${timeStr}"`
+                ].join(' ');
 
-        return '';
-    }, '<div class="graph--info--cont"></div>');
+                return a + `<div class="graph--bar ${zoneClass}" style="height: ${height}px; width: ${stepWidth}%" ${attrs}></div>`;
+            }, '');
+
+            return acc + `<div class="graph--bar-group" style="width: ${width}px; flex-shrink: 0;">${groupInner}</div>`;
+        }
+        return acc;
+    }, '');
+
+    // Generate Y-Axis Labels (every 50W or so depending on scale)
+    let yLabelsHtml = '';
+    const yStep = Math.ceil(maxPower / 5 / 50) * 50 || 50; // coarse steps
+    for(let p = yStep; p < maxPower; p += yStep) {
+        const h = powerToHeight(p, maxPower, viewPort);
+        yLabelsHtml += `<div class="graph--y-label" style="bottom: ${h}px;">${p}</div>`;
+    }
+    
+    // FTP Line
+    const ftpHeight = powerToHeight(currentFtp, maxPower, viewPort);
+    const ftpLineHtml = `
+        <div class="graph--ftp-line" style="bottom: ${ftpHeight}px;"></div>
+        <div class="graph--ftp-label" style="bottom: ${ftpHeight}px;">FTP ${intensity}% (${currentFtp}W)</div>
+    `;
+
+    return `
+        <div class="graph--y-axis" style="height: ${viewPort.height}px;">
+            ${yLabelsHtml}
+        </div>
+        ${ftpLineHtml}
+        <div class="graph--bars-container" style="display: flex; align-items: flex-end; height: 100%; width: 100%;">
+            ${barsHtml}
+        </div>
+        <div class="graph--info--cont"></div>
+    `;
 }
 
 function renderInfo(args = {}) {
@@ -128,6 +203,7 @@ class WorkoutGraph extends HTMLElement {
 
         xf.sub(`db:workout`, this.onWorkout.bind(this), this.signal);
         xf.sub(`db:ftp`, this.onFTP.bind(this), this.signal);
+        xf.sub(`db:intensity`, this.onIntensity.bind(this), this.signal);
 
         xf.sub('db:intervalIndex', this.onIntervalIndex.bind(this), this.signal);
         xf.sub('db:distance', this.onDistance.bind(this), this.signal);
@@ -158,6 +234,10 @@ class WorkoutGraph extends HTMLElement {
         this.ftp = value;
         if(exists(this.workout.intervals)) this.render();
     }
+    onIntensity(value) {
+        this.intensity = value;
+        if(exists(this.workout.intervals)) this.render();
+    }
     onPage(page) {
         if(equals(page, 'home')) {
             const viewPort = this.getViewPort();
@@ -173,7 +253,7 @@ class WorkoutGraph extends HTMLElement {
     }
     onHover(e) {
         const self = this;
-        const target = this.querySelector('.graph--bar:hover');
+        const target = e.target.closest('.graph--bar');
         if(exists(target)) {
             const power        = target.getAttribute('power');
             const cadence      = target.getAttribute('cadence');
@@ -249,28 +329,38 @@ class WorkoutGraph extends HTMLElement {
         if(this.workoutStatus === "done") {
             return;
         }
+        
+        const index = args.index ?? 0;
+        
+        // Safety check if intervals are rendered
+        if (empty(this.dom.intervals)) return;
+        if (!exists(this.workout.intervals[index])) return;
 
-        const index                 = args.index ?? 0;
         const lapTime               = args.lapTime ?? this.workout.intervals[index].duration;
         const $dom                  = args.dom;
         const $parent               = args.parent;
+        const $container            = this.querySelector('.graph--bars-container');
+        // Fallback or safety if container not found
+        if (!$container) return;
+
         const rect                  = $dom.intervals[index].getBoundingClientRect();
-        const left                  = rect.left - $parent.getBoundingClientRect().left;
+        const parentRect            = $container.getBoundingClientRect(); 
+        const left                  = rect.left - parentRect.left;
         const lapPercentageComplete = 1 - (lapTime / this.workout.intervals[index].duration);
 
         $dom.active.style.left   = `${left}px`;
         $dom.active.style.width  = `${rect.width}px`;
-        $dom.active.style.height = `${$parent.getBoundingClientRect().height}px`;
+        $dom.active.style.height = `${parentRect.height}px`;
 
         $dom.progress.style.width = `${left + (rect.width * lapPercentageComplete)}px`;
     }
     render() {
         const self = this;
-        const progress = `<div id="progress" class="progress"></div><div id="progress-active"></div>`;
+        const progress = '<div id="progress" class="progress"></div><div id="progress-active"></div>';
 
         if(equals(this.type, 'workout')) {
             this.innerHTML = progress +
-                intervalsToGraph(this.workout, this.ftp, this.viewPort);
+                intervalsToGraph(this.workout, this.ftp, this.viewPort, this.intensity ?? 100);
 
             this.dom.info      = this.querySelector('.graph--info--cont');
             this.dom.progress  = this.querySelector('#progress');

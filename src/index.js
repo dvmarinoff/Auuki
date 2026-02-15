@@ -1,6 +1,7 @@
 import { xf } from './functions.js';
 import './db.js';
 import './views/views.js';
+import './views/workout-creator.js';
 import './ble/devices.js';
 import './watch.js';
 import './course.js';
@@ -41,4 +42,14 @@ export {
     start,
     stop,
 };
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.querySelector('#open-creator-btn');
+    if(btn) {
+        btn.addEventListener('click', () => {
+             xf.dispatch('ui:open-workout-creator');
+        });
+    }
+});
 
