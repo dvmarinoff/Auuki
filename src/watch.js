@@ -71,6 +71,8 @@ class Watch {
         xf.sub('db:power1s', self.onPower1s.bind(this));
         xf.sub('db:sources', self.onSources.bind(this));
         timer.addEventListener('message', self.onTick.bind(self));
+        // Simulation Tick support
+        xf.sub('test:tick', self.onTick.bind(self));
 
         // UI subs
         xf.sub('ui:workoutStart', e => { self.startWorkout();   });
@@ -193,7 +195,17 @@ class Watch {
         }
 
         if(!self.isStarted()) {
-            self.start();
+            // In simulation/test mode, we don't start the real timer
+            // We rely on 'test:tick' events to advance time
+            if (this.workoutType !== 'test') {
+                timer.postMessage('start');
+            }
+            xf.dispatch('watch:started');
+
+            xf.dispatch('watch:event', {
+                timestamp: Date.now(),
+                type: EventType.start,
+            });
         }
     }
     restoreWorkout() {

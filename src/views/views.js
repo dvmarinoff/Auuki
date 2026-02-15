@@ -16,6 +16,7 @@ import './ant-device-scan.js';
 import './keyboard.js';
 import './intensity-control.js';
 import './remaining-time.js';
+// import './simulation-panel.js';
 
 function start() {
     console.log('start views.');

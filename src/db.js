@@ -409,8 +409,19 @@ xf.reg('services', (x, db) => {
 });
 
 
+import { userManager } from './models/user.js'; // Import user manager
+
 //
 xf.reg('app:start', async function(_, db) {
+
+    // Ensure we have a user context
+    const currentUser = userManager.currentUser;
+    if (!currentUser) {
+        console.error('No user selected! Cannot start app.');
+        return;
+    }
+
+    console.log(`Starting app for user: ${currentUser.name} (${currentUser.id})`);
 
     db.dockMode = models.dockMode.set(models.dockMode.restore());
     models.dockMode.apply(db.dockMode);
@@ -425,7 +436,10 @@ xf.reg('app:start', async function(_, db) {
     db.sources = models.sources.set(models.sources.restore());
 
     // IndexedDB Schema Version 3
-    await idb.start('store', 3, ['session', 'workouts', 'activity']);
+    // Use user-specific database name
+    const dbName = `store_${currentUser.id}`;
+    await idb.start(dbName, 3, ['session', 'workouts', 'activity']);
+    
     db.workouts = await models.workouts.restore();
     db.activity = await models.activity.restore();
     db.workout = models.workout.restore(db);

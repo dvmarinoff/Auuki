@@ -30,6 +30,11 @@ function IDB(args = {}) {
         if(empty(database)) {
             throw new Error(`:idb idb.start() called with empty name!`);
         };
+        if(db) {
+            console.log(':idb closing existing connection...');
+            db.close();
+            db = null;
+        }
         await open(database, version, stores);
     }
 
