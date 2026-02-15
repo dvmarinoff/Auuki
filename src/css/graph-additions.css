@@ -46,3 +46,20 @@ workout-graph {
     font-size: 10px;
     padding-right: 4px;
 }
+
+.graph--x-axis {
+    bottom: -15px !important; 
+    /* Bars sit on bottom. Axis labels below. */
+    z-index: 20;
+}
+.graph--x-label {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    background: rgba(0,0,0,0.5); /* contrast */
+    padding: 1px 3px;
+    border-radius: 2px;
+}
+

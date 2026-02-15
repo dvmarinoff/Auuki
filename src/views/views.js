@@ -1,3 +1,4 @@
+
 import './connection-switch.js';
 import './data-views.js';
 import './auth-forms.js';
@@ -14,9 +15,13 @@ import './watch.js';
 import './ant-device-scan.js';
 import './keyboard.js';
 import './intensity-control.js';
+import './remaining-time.js';
 
 function start() {
     console.log('start views.');
 }
 
-start();
+export {
+    start,
+};
+

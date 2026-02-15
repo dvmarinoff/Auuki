@@ -407,11 +407,17 @@ xf.reg('watch:intervalIndex', (index, db) => db.intervalIndex    = index);
 xf.reg('watch:stepIndex',     (index, db) => {
     db.stepIndex         = index;
     const intervalIndex  = db.intervalIndex;
-    const powerTarget    = db.workout.intervals[intervalIndex].steps[index].power;
-    const slopeTarget    = db.workout.intervals[intervalIndex].steps[index].slope;
-    const cadenceTarget  = db.workout.intervals[intervalIndex].steps[index].cadence;
-    const distanceTarget = db.workout.intervals[intervalIndex].steps[index].distance;
-    const intensity      = existance(db.intensity, 100) / 100;
+
+    if(!exists(intervalIndex) || !db.workout?.intervals?.[intervalIndex]?.steps?.[index]) {
+        return;
+    }
+
+    const step           = db.workout.intervals[intervalIndex].steps[index];
+    const powerTarget    = step.power;
+    const slopeTarget    = step.slope;
+    const cadenceTarget  = step.cadence;
+    const distanceTarget = step.distance;
+    const intensity      = parseFloat(existance(db.intensity, 100)) / 100;
 
     if(exists(slopeTarget)) {
         xf.dispatch('ui:slope-target-set', slopeTarget);
@@ -443,7 +449,7 @@ xf.reg('watch:intensity', (intensity, db) => {
     const powerTarget    = db.workout?.intervals?.[intervalIndex]?.steps?.[stepIndex]?.power;
 
     if(exists(powerTarget)) {
-        const i = existance(db.intensity, 100) / 100;
+        const i = parseFloat(existance(db.intensity, 100)) / 100;
         xf.dispatch('ui:power-target-set', models.ftp.toAbsolute(powerTarget, db.ftp) * i);
     }
 });

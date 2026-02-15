@@ -127,7 +127,22 @@ function intervalsToGraph(workout, ftp, viewPort, intensity = 100) {
         const h = powerToHeight(p, maxPower, viewPort);
         yLabelsHtml += `<div class="graph--y-label" style="bottom: ${h}px;">${p}</div>`;
     }
+
+    // Generate X-Axis Labels (Time)
+    // Step depending on total duration. 5 mins if > 30 mins, 2 mins if < 30?
+    // Let's pick a step that gives us ~5-8 labels.
+    const xStepSeconds = Math.max(60, Math.ceil(totalDuration / 8 / 60) * 60); // Round grid to nearest minute
+    let xLabelsHtml = '';
     
+    // Only generate X-axis if valid duration
+    if(totalDuration > 0) {
+        for(let t = xStepSeconds; t < totalDuration; t += xStepSeconds) {
+            const xPos = translate(t, 0, totalDuration, 0, totalWidth);
+            const timeLabel = formatTime({value: t, format: 'mm:ss'});
+            xLabelsHtml += `<div class="graph--x-label" style="left: ${xPos}px;">${timeLabel}</div>`;
+        }
+    }
+
     // FTP Line
     const ftpHeight = powerToHeight(currentFtp, maxPower, viewPort);
     const ftpLineHtml = `
@@ -138,6 +153,9 @@ function intervalsToGraph(workout, ftp, viewPort, intensity = 100) {
     return `
         <div class="graph--y-axis" style="height: ${viewPort.height}px;">
             ${yLabelsHtml}
+        </div>
+        <div class="graph--x-axis" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; pointer-events: none;">
+            ${xLabelsHtml}
         </div>
         ${ftpLineHtml}
         <div class="graph--bars-container" style="display: flex; align-items: flex-end; height: 100%; width: 100%;">
