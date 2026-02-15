@@ -1,0 +1,1 @@
+# Node specific modules\nnode_modules/\n.npm/\n\n# Source control\n.git/\n.gitignore\n\n# Build cache and output\n# Parcel cache\n.parcel-cache/\n# Default output\ndist/\n\n# IDE specific files\n.vscode/\n.idea/\n\n# Docker specific\nDockerfile\ndocker-compose.yml\n.dockerignore\n

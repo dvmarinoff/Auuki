@@ -106,3 +106,14 @@ Tacx Heart Rate monitor, Tacx Flux S trainer, and X240 laptop with Ubuntu 20.04.
         <img style="display: inline-block;" src="https://avatars.githubusercontent.com/u/81325092?v=4" width="48" height="48" />
     </a>
 </div>
+
+## Docker Support
+
+You can run the application in a Docker container using the provided configuration. This serves the optimized production build using Nginx.
+
+### Using Docker Compose
+```bash
+docker-compose up -d --build
+```
+The application will be available at http://localhost:8080.
+
