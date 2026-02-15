@@ -1,4 +1,4 @@
-import { equals, exists, empty, first, last, xf, avg, max, toFixed, print, } from './functions.js';
+import { equals, exists, existance, empty, first, last, xf, avg, max, toFixed, print, } from './functions.js';
 import { kphToMps, mpsToKph, timeDiff, pad } from './utils.js';
 import { models } from './models/models.js';
 import { ControlMode, } from './ble/enums.js';
