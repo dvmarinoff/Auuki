@@ -2,7 +2,7 @@ import { xf, exists, existance, empty, equals, mavg, avg, max,
          first, second, last, clamp, toFixed, isArray,
          isString, isObject } from '../functions.js';
 
-import { inRange, dateToDashString, getStartEndOfWeek, timeDiff, pad } from '../utils.js';
+import { inRange, dateToDashString, getStartEndOfWeek, isToday, timeDiff, pad } from '../utils.js';
 
 import { LocalStorageItem } from '../storage/local-storage.js';
 import { idb } from '../storage/idb.js';
@@ -703,9 +703,6 @@ class Workout extends Model {
         const workout = this.parse(atob(event.workout_file_base64));
         workout.meta.planned = true;
         workout.meta.startDateLocal = event.start_date_local;
-        console.log("!!!! !!!!");
-        console.log(workout);
-        console.log("!!!! !!!!");
         workout.id = uuid();
         workout.intervals_id = event.id;
         return workout;
@@ -882,7 +879,7 @@ class Planned {
         const self = this;
         if(service === 'intervals') {
             const { startOfWeek, endOfWeek } = getStartEndOfWeek(new Date(), true);
-            const response = await api.intervals.wod(startOfWeek, endOfWeek);
+            const response = await api.intervals.wodMock(startOfWeek, endOfWeek);
             const workouts = self.workoutModel.fromIntervalsResponse(response);
 
             this.setWorkouts(workouts);
@@ -890,8 +887,13 @@ class Planned {
             this.backup();
 
             if(!this.isEmpty()) {
-                const id = first(this.data.workouts).id;
-                xf.dispatch(`action:li:${id}`, ':select');
+                for(let workout in this.data.workouts) {
+                    if(isToday(workout.meta.startDateLocal)) {
+                        const id = workout.id;
+                        xf.dispatch(`action:li:${id}`, ':select');
+                        break;
+                    }
+                }
             }
         }
     }

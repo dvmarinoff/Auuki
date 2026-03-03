@@ -99,8 +99,6 @@ class PlannedList extends HTMLElement {
         const self = this;
 
         const id = workout.id;
-        console.log(workout.meta.startDateLocal);
-        console.log(isoDateToWeekDay(workout.meta.startDateLocal));
         const weekDay = isoDateToWeekDay(workout.meta.startDateLocal ?? isoDate());
         const weekDayTemplate = `
             <div class="weekday">${weekDay.weekDay}</div>
