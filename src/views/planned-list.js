@@ -1,4 +1,5 @@
 import { xf, empty, } from '../functions.js';
+import { isoDate, isoDateToWeekDay } from '../utils.js';
 import { models } from '../models/models.js';
 import { WorkoutGraphViewModel, } from './workout-graph-svg.js';
 
@@ -11,7 +12,7 @@ import { WorkoutGraphViewModel, } from './workout-graph-svg.js';
 class PlannedList extends HTMLElement {
     constructor() {
         super();
-        this.capacity = 10;
+        this.capacity = 14;
         this.index = 0;
         this.model = models.planned;
         this.viewModel = new WorkoutGraphViewModel({item: ':planned'});
@@ -98,6 +99,12 @@ class PlannedList extends HTMLElement {
         const self = this;
 
         const id = workout.id;
+        console.log(workout.meta.startDateLocal);
+        console.log(isoDateToWeekDay(workout.meta.startDateLocal));
+        const weekDay = isoDateToWeekDay(workout.meta.startDateLocal ?? isoDate());
+        const weekDayTemplate = `
+            <div class="weekday">${weekDay.weekDay}</div>
+            <div class="date">${`${weekDay.day}`.padStart(2, "0")}</div>`;
         const name = workout.meta.name;
         const category = workout.meta.category;
         const description = workout.meta.description;
@@ -111,6 +118,7 @@ class PlannedList extends HTMLElement {
         }
 
         const summary = `
+        <div class="workout--date">${weekDayTemplate}</div>
         <div class="workout--name">${name}</div>
         <div class="workout--type">${category}</div>
         <div class="workout--duration">${duration}</div>`;

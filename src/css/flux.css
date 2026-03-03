@@ -1436,11 +1436,9 @@ auto-start-counter {
         max-width: var(--inner-max-width);
         margin: 0 auto;
 
-
         .summary--data {
             display: grid;
-            grid-template-columns: 5fr 3fr 2fr 1fr 1fr;
-
+            grid-template-columns: 1fr 5fr 3fr 2fr 1fr 1fr;
             align-items: center;
             align-content: center;
             width: 100%;
@@ -1448,6 +1446,24 @@ auto-start-counter {
             padding: 1.5em 0;
             text-align: left;
             cursor: pointer;
+
+            svg {
+                display: block;
+            }
+        }
+
+        .workout--date {
+            /* font-size: var(--workout--type-font-size); */
+            text-align: center;
+
+            .weekday {
+                color: var(--zone-red);
+            }
+            .date {
+                font-size: var(--workout--duration-font-size);
+                font-weight: bold;
+                line-height: 1.2em;
+            }
         }
     }
     .selectable {

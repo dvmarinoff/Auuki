@@ -126,6 +126,7 @@ function Intervals(args = {}) {
         }
     }
 
+    /*
     async function wod() {
         const oldest = isoDate();
         const newest = isoDate();
@@ -164,11 +165,59 @@ function Intervals(args = {}) {
             return [];
         }
     }
+    */
 
-    async function wodMock() {
+    // String, String -> Void
+    // "", ""
+    async function wod(oldest = isoDate(), newest = isoDate()) {
+        const url = `${api_uri}/api/intervals/events` +
+              '?' +
+              new URLSearchParams({
+                  oldest,
+                  newest,
+              })
+              .toString();
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if(response.ok) {
+                const data = await response.json();
+                xf.dispatch('action:planned', ':intervals:wod:success');
+                console.log(data);
+                return data.filter((item) => exists(item.workout_file_base64));
+            } else {
+                xf.dispatch('action:planned', ':intervals:wod:fail');
+                if(response.status === 403) {
+                    console.log(`:api :no-auth`);
+                    xf.dispatch('action:auth', ':password:login');
+                    xf.dispatch('ui:modal:error:open', DialogMsg.noAuth);
+                }
+                return [];
+            }
+        } catch(error) {
+            xf.dispatch('action:planned', ':intervals:wod:fail');
+            console.log(error);
+            return [];
+        }
+    }
+
+    async function wodMock(oldest = isoDate(), newest = isoDate()) {
         const body = [{
             id: 47549572,
-            start_date_local: `${isoDate()}T00:00:00`,
+            start_date_local: `2026-03-03T00:00:00`,
+            category: "WORKOUT",
+            name: "Intervals.icu Threshold",
+            indoor: true,
+            workout_filename: "Intervals_icu_Threshold.zwo",
+            workout_file_base64: "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8d29ya291dF9maWxlPgogICAgPGF1dGhvcj5EaW1pdGFyIE1hcmlub3Y8L2F1dGhvcj4KICAgIDxuYW1lPkludGVydmFscy5pY3UgVGhyZXNob2xkPC9uYW1lPgogICAgPGRlc2NyaXB0aW9uPjwvZGVzY3JpcHRpb24+CiAgICA8c3BvcnRUeXBlPmJpa2U8L3Nwb3J0VHlwZT4KICAgIDx0YWdzLz4KICAgIDx3b3Jrb3V0PgogICAgICAgIDxXYXJtdXAgUG93ZXJIaWdoPSIwLjYyNyIgUG93ZXJMb3c9IjAuMzg5IiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMC42MjciIER1cmF0aW9uPSI2MCIvPgogICAgICAgIDxTdGVhZHlTdGF0ZSBzaG93X2F2Zz0iMSIgUG93ZXI9IjAuOTc4IiBEdXJhdGlvbj0iMzAiLz4KICAgICAgICA8U3RlYWR5U3RhdGUgc2hvd19hdmc9IjEiIFBvd2VyPSIwLjUiIER1cmF0aW9uPSIzMCIvPgogICAgICAgIDxTdGVhZHlTdGF0ZSBzaG93X2F2Zz0iMSIgUG93ZXI9IjAuOTc4IiBEdXJhdGlvbj0iMzAiLz4KICAgICAgICA8U3RlYWR5U3RhdGUgc2hvd19hdmc9IjEiIFBvd2VyPSIwLjUiIER1cmF0aW9uPSIzMCIvPgogICAgICAgIDxTdGVhZHlTdGF0ZSBzaG93X2F2Zz0iMSIgUG93ZXI9IjAuNTU5IiBEdXJhdGlvbj0iMTIwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMS4wIiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMC41IiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMS4wIiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMC41IiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMS4wIiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMC41IiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMS4wIiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMC41IiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMS4wIiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPFN0ZWFkeVN0YXRlIHNob3dfYXZnPSIxIiBQb3dlcj0iMC41IiBEdXJhdGlvbj0iMzAwIi8+CiAgICAgICAgPENvb2xkb3duIFBvd2VySGlnaD0iMC4zODkiIFBvd2VyTG93PSIwLjUiIER1cmF0aW9uPSIzMDAiLz4KICAgIDwvd29ya291dD4KPC93b3Jrb3V0X2ZpbGU+Cg==" }
+                      ,
+{
+            id: 47549573,
+            start_date_local: `2026-03-04T00:00:00`,
             category: "WORKOUT",
             name: "Intervals.icu Threshold",
             indoor: true,

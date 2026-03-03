@@ -68,6 +68,36 @@ function isoDate(date = new Date(), local = true) {
     }
 }
 
+function isoDateToWeekDay(isoDateString = isoDate()) {
+    let date = new Date(isoDateString);
+    let day = date.getDate();
+    let weekDay = date.toLocaleString('en-US', {weekday: 'short'});
+    return { day, weekDay };
+}
+
+function getStartEndOfWeek(fromDate = new Date(), iso = false) {
+    const date = new Date(fromDate);
+    const dayOfWeek = date.getDay();
+
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    let startOfWeek = new Date(date);
+    startOfWeek.setDate(startOfWeek.getDate() + mondayOffset);
+
+    let endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
+
+    if(iso) {
+        startOfWeek = isoDate(startOfWeek);
+        endOfWeek = isoDate(endOfWeek);
+    }
+
+    return {
+            startOfWeek,
+            endOfWeek,
+        };
+
+}
+
 function format(x, precision = 1000) {
     return Math.round(x * precision) / precision;
 }
@@ -301,6 +331,8 @@ export {
     formatTime,
     dateToDashString,
     isoDate,
+    isoDateToWeekDay,
+    getStartEndOfWeek,
     format,
     kphToMps,
     mpsToKph,
