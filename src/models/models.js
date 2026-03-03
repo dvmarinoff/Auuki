@@ -887,7 +887,7 @@ class Planned {
             this.backup();
 
             if(!this.isEmpty()) {
-                for(let workout in this.data.workouts) {
+                for(let workout of this.data.workouts) {
                     if(isToday(workout.meta.startDateLocal)) {
                         const id = workout.id;
                         xf.dispatch(`action:li:${id}`, ':select');
