@@ -879,7 +879,7 @@ class Planned {
         const self = this;
         if(service === 'intervals') {
             const { startOfWeek, endOfWeek } = getStartEndOfWeek(new Date(), true);
-            const response = await api.intervals.wodMock(startOfWeek, endOfWeek);
+            const response = await api.intervals.wod(startOfWeek, endOfWeek);
             const workouts = self.workoutModel.fromIntervalsResponse(response);
 
             this.setWorkouts(workouts);
