@@ -472,6 +472,18 @@ function SteadyState(args = {}) {
         const power     = element.Power;
         const powerLow  = element.PowerLow;
         const powerHigh = element.PowerHigh;
+        const cadence     = element.Cadence;
+        const cadenceLow  = element.CadenceLow;
+        const cadenceHigh = element.CadenceHigh;
+
+        if(!exists(cadence) && (exists(cadenceLow) || exists(cadenceHigh))) {
+            const avgCadence = [cadenceLow, cadenceHigh]
+                .filter(exists)
+                .reduce((acc, x, _, { length }) => acc + x / length, 0);
+            element.Cadence = Math.round(avgCadence);
+            element.CadenceLow = undefined;
+            element.CadenceHigh = undefined;
+        }
 
         let step = {};
 
