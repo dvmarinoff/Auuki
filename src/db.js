@@ -337,6 +337,23 @@ xf.reg('ui:workout:upload', async function(files, db) {
     }
 
 });
+xf.reg('ui:workout:load-url', async function(workoutUrl, db) {
+    try {
+        const response = await fetch(workoutUrl);
+        if(!response.ok) {
+            throw new Error(`Failed to fetch workout: ${response.status}`);
+        }
+        const result = await response.text();
+        const name = workoutUrl.split('/').pop() || 'workout.zwo';
+        const workout = models.workout.parse(result, name);
+        models.workouts.add(db.workouts, workout);
+        xf.dispatch('db:workouts', db);
+        xf.dispatch('ui:workout:select', workout.id);
+        xf.dispatch('ui:page-set', 'home');
+    } catch (e) {
+        console.error(`:ui :workout :load-url :error`, e);
+    }
+});
 xf.reg('watch:stopped', (_, db) => {
     try {
         models.activity.createFromCurrent(db);
@@ -470,4 +487,3 @@ function start () {
 start();
 
 export { db };
-
