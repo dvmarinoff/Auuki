@@ -39,6 +39,10 @@ function Sound(args) {
             interval();
         }, signal);
 
+        xf.sub('watch:textEvent', _ => {
+            chime();
+        }, signal);
+
         xf.sub('watch:paused', _ => {
             if(exists(oscillator)) {
                 audioContext.suspend();
@@ -88,6 +92,31 @@ function Sound(args) {
 
         oscillator.start(time);
         oscillator.stop(time + 4.15);
+    }
+
+    function chime() {
+        const ctx = audioContext || new AudioContext();
+        ctx.resume().then(() => {
+            const osc      = new OscillatorNode(ctx, {type: 'sine'});
+            const gainNode = ctx.createGain();
+            const time     = ctx.currentTime;
+            const high     = volume / 100;
+
+            gainNode.gain.setValueAtTime(0,    time);
+            gainNode.gain.linearRampToValueAtTime(high, time + 0.02);
+            gainNode.gain.setValueAtTime(high, time + 0.12);
+            gainNode.gain.linearRampToValueAtTime(0,    time + 0.25);
+            gainNode.gain.linearRampToValueAtTime(high, time + 0.32);
+            gainNode.gain.setValueAtTime(high, time + 0.50);
+            gainNode.gain.linearRampToValueAtTime(0,    time + 0.70);
+
+            osc.frequency.setValueAtTime(notes[5].e, time);
+            osc.frequency.setValueAtTime(notes[5].a, time + 0.28);
+
+            osc.connect(gainNode).connect(ctx.destination);
+            osc.start(time);
+            osc.stop(time + 0.75);
+        });
     }
 
     // 2 canceling sine waves,

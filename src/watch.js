@@ -26,6 +26,8 @@ class Watch {
         // end Distance
 
         this.intervals         = [];
+        this.intervalElapsed   = 0;
+        this.firedTextEvents   = new Set();
         this.workoutType       = "workout";
         this.autoStartCounter  = 3;
         this.autoPauseCounter  = 0;
@@ -94,6 +96,16 @@ class Watch {
     isWorkoutDone()    { return this.stateWorkout === 'done'; };
     isIntervalType(type) {
         return equals(this.intervalType, type);
+    }
+    checkTextEvents() {
+        const textEvents = this.intervals[this.intervalIndex]?.textEvents ?? [];
+        for(let i = 0; i < textEvents.length; i++) {
+            if(!this.firedTextEvents.has(i) &&
+                this.intervalElapsed >= textEvents[i].timeoffset) {
+                this.firedTextEvents.add(i);
+                xf.dispatch('watch:textEvent', textEvents[i]);
+            }
+        }
     }
     status() {
         return this.state;
@@ -186,6 +198,9 @@ class Watch {
             xf.dispatch('watch:stepDuration',     stepTime);
             xf.dispatch('watch:lapTime',          intervalTime);
             xf.dispatch('watch:stepTime',         stepTime);
+
+            self.intervalElapsed = 0;
+            self.firedTextEvents = new Set();
         }
 
         if(exists(self.points)) {
@@ -195,6 +210,8 @@ class Watch {
         if(!self.isStarted()) {
             self.start();
         }
+
+        self.checkTextEvents();
     }
     restoreWorkout() {
         const self = this;
@@ -256,6 +273,9 @@ class Watch {
             }
             xf.dispatch('watch:elapsed', 0);
             xf.dispatch('watch:lapTime', 0);
+
+            self.intervalElapsed = 0;
+            self.firedTextEvents = new Set();
         }
     }
     onTick() {
@@ -267,6 +287,8 @@ class Watch {
         if(self.isWorkoutStarted() && !equals(self.stepTime, 0)) {
             lapTime  -= 1;
             stepTime -= 1;
+            self.intervalElapsed += 1;
+            self.checkTextEvents();
         } else {
             lapTime  += 1;
         }
@@ -331,10 +353,13 @@ class Watch {
         }
     }
     nextInterval(intervals, intervalIndex, stepIndex) {
+        this.intervalElapsed = 0;
+        this.firedTextEvents = new Set();
         if(exists(intervals[intervalIndex].duration)) {
-            return this.nextDurationInterval(intervals, intervalIndex, stepIndex);
+            this.nextDurationInterval(intervals, intervalIndex, stepIndex);
+            this.checkTextEvents();
+            return;
         }
-        return undefined;
     }
     nextStep(intervals, intervalIndex, stepIndex) {
         if(this.isDurationStep(intervals, intervalIndex, stepIndex)) {

@@ -101,6 +101,14 @@ function OffStep(element) {
     return attributesToStep(spec);
 }
 
+function readTextEvents(el) {
+    return Array.from(el.querySelectorAll('textevent')).map(te => ({
+        message:    te.getAttribute('message') ?? '',
+        timeoffset: parseInt(te.getAttribute('timeoffset') ?? '0'),
+        duration:   parseInt(te.getAttribute('duration')   ?? '10'),
+    }));
+}
+
 function Element(args = {}) {
     const defaults = {
         name:     'Unknown',
@@ -199,7 +207,18 @@ function Element(args = {}) {
     }
 
     function readToInterval(args = {}) {
-        return toInterval(read(args));
+        const el         = existance(args.el);
+        const result     = toInterval(read(args));
+        const textEvents = readTextEvents(el);
+
+        if(Array.isArray(result)) {
+            if(result.length > 0 && textEvents.length > 0) {
+                result[0] = Object.assign({}, result[0], {textEvents});
+            }
+            return result;
+        }
+
+        return Object.assign({}, result, {textEvents});
     }
 
     function writeFromInterval(args = {}) {
