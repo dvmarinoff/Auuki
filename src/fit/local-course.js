@@ -111,4 +111,5 @@ const localCourse = {
 
 export {
     localCourse,
+    toCourse,
 };

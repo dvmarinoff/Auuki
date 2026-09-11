@@ -14,6 +14,7 @@ import { zwo } from '../workouts/zwo.js';
 import { fileHandler } from '../file.js';
 import { Model as Cycling } from '../physics.js';
 import { fit } from '../fit/fit.js';
+import { gpx } from '../gpx/gpx.js';
 
 import { Device, Status, ControlMode, } from '../ble/enums.js';
 import { TimerStatus, EventType, } from '../activity/enums.js';
@@ -696,6 +697,9 @@ class Workout extends Model {
             const courseJS = fit.localCourse.decode(view, name);
             console.log(courseJS);
             return courseJS;
+        }
+        if(isString(result) && result.includes('<gpx')) {
+            return gpx.parse(result, name);
         }
         return zwo.readToInterval(result);
     }
