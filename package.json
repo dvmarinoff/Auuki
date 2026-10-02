@@ -15,6 +15,7 @@
         "build": "parcel build"
     },
     "dependencies": {
+        "@deancochran/ftms": "0.6.0",
         "@babel/core": "^7.13.13",
         "@babel/node": "^7.13.13",
         "parcel": "^2.12.0"
