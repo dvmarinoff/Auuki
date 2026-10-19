@@ -567,6 +567,7 @@ function Head(args = {}) {
         const category    = readContent(doc.querySelector('category'));
         const subcategory = readContent(doc.querySelector('subcategory'));
         const sportType   = readContent(doc.querySelector('sportType'));
+        const tags        = readContent(doc.querySelector('tags'));
 
         return {
             author:      existance(author, defaults.author),
@@ -575,6 +576,7 @@ function Head(args = {}) {
             category:    existance(category, defaults.category),
             subcategory: existance(subcategory, defaults.subcategory),
             sportType:   existance(sportType, defaults.sportType),
+            tags:        existance(tags, defaults.tags),
         };
     }
 
@@ -608,6 +610,7 @@ function Head(args = {}) {
             subcategory: intervals.meta.subcategory,
             sportType: intervals.meta.sportType,
             description: intervals.meta.description,
+            tags: intervals.meta.tags,
         };
     }
 

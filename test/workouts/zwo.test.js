@@ -19,6 +19,7 @@ describe('Zwo', () => {
             <author>Flux</author>
             <name>Test Workout</name>
             <category>Sweet Spot</category>
+            <subcategory></subcategory>
             <description>Description of test workout</description>
             <sporttype>bike</sporttype>
             <tags></tags>
@@ -40,6 +41,7 @@ describe('Zwo', () => {
                 subcategory: "",
                 sportType: "bike",
                 description: "Description of test workout",
+                tags: "",
             },
             body: [
                 {element: 'SteadyState', Duration: 10, Power: 0.50},
@@ -62,14 +64,15 @@ describe('Zwo', () => {
                 <author>Flux</author>
                 <name>Test Workout</name>
                 <category>Sweet Spot</category>
+                <subcategory></subcategory>
                 <description>Description of test workout</description>
                 <sporttype>bike</sporttype>
                 <tags></tags>
                 <workout>
-                    <SteadyState Duration="10" Power="0.50"/>
+                    <SteadyState Duration="10" Power="0.50">
                         <textevent timeoffset="0" message="01 SteadyState 01 message +00 10s" duration="10" />
                     <SteadyState/>
-                    <SteadyState Duration="20" Power="0.90"/>
+                    <SteadyState Duration="20" Power="0.90">
                         <textevent timeoffset="0" message="02 SteadyState 01 message +00 10s" duration="10" />
                         <textevent timeoffset="10" message="02 SteadyState 02 message +10 10s" duration="10" />
                     <SteadyState/>
@@ -95,6 +98,7 @@ describe('Zwo', () => {
                 author: 'Flux',
                 name: "Test Workout",
                 category: "Sweet Spot",
+                subcategory: "",
                 sportType: "bike",
                 description: "Description of test workout",
                 tags: "",
@@ -109,7 +113,7 @@ describe('Zwo', () => {
                     {element: 'TextEvent', duration: 10, timeoffset: 0, message: "02 SteadyState 02 message +00 10s"}
                 ]
                 },
-                {element: 'SteadyState', Duration: 10, Power: 0.50, children: [
+                {element: 'SteadyState', Duration: 60, Power: 0.50, children: [
                     {element: 'TextEvent', duration: 10, timeoffset: 10, message: "03 SteadyState 01 message +10 10s"},
                     {element: 'TextEvent', duration: 10, timeoffset: 30, message: "03 SteadyState 02 message +30 10s"},
                     {element: 'TextEvent', duration: 10, timeoffset: 50, message: "03 SteadyState 03 message +50 10s"}
@@ -140,6 +144,7 @@ describe('Zwo', () => {
             <author>Flux</author>
             <name>Test Workout</name>
             <category>Sweet Spot</category>
+            <subcategory></subcategory>
             <description>Description of test workout</description>
             <sporttype>bike</sporttype>
             <tags></tags>
@@ -162,6 +167,7 @@ describe('Zwo', () => {
                 subcategory: "",
                 sportType: "bike",
                 description: "Description of test workout",
+                tags:"",
                 duration: 3 * 60, // 60s
             },
             intervals: [
@@ -189,14 +195,15 @@ describe('Zwo', () => {
                 <author>Flux</author>
                 <name>Test Workout</name>
                 <category>Sweet Spot</category>
+                <subcategory></subcategory>
                 <description>Description of test workout</description>
                 <sporttype>bike</sporttype>
                 <tags></tags>
                 <workout>
-                    <SteadyState Duration="10" Power="0.50"/>
+                    <SteadyState Duration="10" Power="0.50">
                         <textevent timeoffset="0" message="01 SteadyState 01 message +00 10s" duration="10" />
                     <SteadyState/>
-                    <SteadyState Duration="20" Power="0.90"/>
+                    <SteadyState Duration="20" Power="0.90">
                         <textevent timeoffset="0" message="02 SteadyState 01 message +00 10s" duration="10" />
                         <textevent timeoffset="10" message="02 SteadyState 02 message +10 10s" duration="10" />
                     <SteadyState/>
@@ -226,7 +233,8 @@ describe('Zwo', () => {
                 subcategory: "",
                 sportType: "bike",
                 description: "Description of test workout",
-                duration: 10+20+60+10+40+20+40+20, // 230s
+                tags: "",
+                duration: 10+20+60+10+10+5+10+5, // 130s 00:02:10
             },
             intervals: [
                 {duration: 10, steps: [{duration: 10, power: 0.50, messages: [
@@ -236,24 +244,24 @@ describe('Zwo', () => {
                     {duration: 10, offset: 10, message: "02 SteadyState 01 message +10 10s"},
                     {duration: 10, offset: 20, message: "02 SteadyState 02 message +20 10s"},
                 ]}]},
-                {duration: 60, steps: [{duration: 30, power: 0.50, messages: [
+                {duration: 60, steps: [{duration: 60, power: 0.50, messages: [
                     {duration: 10, offset: 10, message: "03 SteadyState 01 message +10 10s"},
                     {duration: 10, offset: 30, message: "03 SteadyState 02 message +30 10s"},
                     {duration: 10, offset: 50, message: "03 SteadyState 03 message +50 10s"},
                 ]}]},
-                {duration: 10, steps: [{duration: 30, power: 0.50, messages: [
+                {duration: 10, steps: [{duration: 10, power: 0.50, messages: [
                     {duration: 10, offset: 0, message: "04 FreeRide 01 message +00 10s"},
                 ]}]},
-                {duration: 40, steps: [{duration: 10, power: 1.21, messages: [
+                {duration: 10, steps: [{duration: 10, power: 1.21, messages: [
                     {duration: 10, offset: 0, message: "05 IntervalsT 01 interval 01 message +00 10s"},
                 ]}]},
-                {duration: 20, steps: [{duration: 5, power: 0.70, messages: [
+                {duration: 5, steps: [{duration: 5, power: 0.70, messages: [
                     {duration: 5, offset: 0, message: "05 IntervalsT 02 interval 01 message +00 05s"},
                 ]}]},
-                {duration: 40, steps: [{duration: 10, power: 1.21, messages: [
+                {duration: 10, steps: [{duration: 10, power: 1.21, messages: [
                     {duration: 10, offset: 0, message: "05 IntervalsT 03 interval 01 message +00 10s"},
                 ]}]},
-                {duration: 20, steps: [{duration: 5, power: 0.70, messages: [
+                {duration: 5, steps: [{duration: 5, power: 0.70, messages: [
                     {duration: 5, offset: 0, message: "05 IntervalsT 04 interval 01 message +00 5s"},
                 ]}]},
             ],
