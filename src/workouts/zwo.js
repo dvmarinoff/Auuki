@@ -2,9 +2,6 @@ import { equals, existance, exists,
          empty, first, last, repeat,
          capitalize, toFixed } from '../functions.js';
 
-// TODO: replace with ParserCombinators.js implementation
-// - allow for wrong xml syntax
-
 function readAttribute(args = {}) {
     const el       = args.el;
     const name     = args.name;
@@ -513,6 +510,31 @@ function SteadyState(args = {}) {
     return Element(spec);
 }
 
+function TextEvent(args = {}) {
+
+    const spec = Object.assign({
+        name:     'textevent',
+        tagOpen:  '<textevent',
+        tagClose: ' />',
+        toEvent:  toEvent,
+    }, args.spec);
+
+    function toEvent(element) {
+        const duration   = element.Duration;
+        const timeoffset = element.Timeoffset;
+        const message    = element.Message;
+
+        let step = {};
+
+        return {
+            duration: duration,
+            steps: [step],
+        };
+    }
+
+    return Element(spec);
+}
+
 function readContent(el) {
     if(exists(el)) {
         let value = el.textContent;
@@ -742,6 +764,7 @@ const Elements = {
     Warmup:      Warmup(),
     // SteadyState: Element({name: 'SteadyState', tagOpen: '<SteadyState', tagClose: ' />'}),
     SteadyState: SteadyState(),
+    TextEvent:   TextEvent(),
     IntervalsT:  IntervalsT(),
     FreeRide:    FreeRide(),
     Ramp:        Ramp(),

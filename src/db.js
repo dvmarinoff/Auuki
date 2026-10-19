@@ -74,6 +74,7 @@ let db = {
     // Workouts
     workouts: [],
     workout: models.workout.default,
+    workoutTextEvent: "",
 
     // Activities
     activity: models.activity.default,

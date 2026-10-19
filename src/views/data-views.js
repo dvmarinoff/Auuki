@@ -583,6 +583,20 @@ class SkinTemperatureValue extends DataView {
 customElements.define('skin-temperature-value', SkinTemperatureValue);
 
 
+class WorkoutTextEvent extends DataView {
+    getDefaults() {
+        return {
+            prop: 'db:workoutTextEvent',
+        };
+    }
+    getValue(propValue) {
+        return propValue.meta.name;
+    }
+}
+
+customElements.define('workout-text-event', WorkoutTextEvent);
+
+
 
 class WorkoutName extends DataView {
     getDefaults() {
