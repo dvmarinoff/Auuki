@@ -26,6 +26,8 @@ class Watch {
         // end Distance
 
         this.intervals         = [];
+        this.textEvents        = [];
+        this.textEvent         = '';
         this.workoutType       = "workout";
         this.autoStartCounter  = 3;
         this.autoPauseCounter  = 0;
@@ -49,6 +51,10 @@ class Watch {
         xf.sub('db:workoutStatus',   state => {
             self.stateWorkout = state;
 
+            if(!self.isWorkoutStarted()) {
+                self.dispatchTextEvent();
+            }
+
             if(self.isWorkoutDone()) {
                 xf.dispatch('watch:lap');
                 // reset to slope mode 0% when workout is done
@@ -58,7 +64,8 @@ class Watch {
             }
         });
         xf.sub('db:workout',       workout => {
-            self.intervals = workout.intervals;
+            self.intervals  = workout.intervals;
+            self.textEvents = flattenMessages(self.intervals);
             if(workout.meta.category?.toLowerCase().includes("test")) {
                 self.workoutType = "test";
                 // force turn off auto pausing for Test Category workouts
@@ -67,6 +74,7 @@ class Watch {
                 self.workoutType = "workout";
             }
             console.log(`:workout :type ${self.workoutType}`);
+            self.dispatchTextEvent();
         });
         xf.sub('db:power1s', self.onPower1s.bind(this));
         xf.sub('db:sources', self.onSources.bind(this));
@@ -195,6 +203,8 @@ class Watch {
         if(!self.isStarted()) {
             self.start();
         }
+
+        self.dispatchTextEvent();
     }
     restoreWorkout() {
         const self = this;
@@ -284,6 +294,28 @@ class Watch {
 
             self.step();
         }
+
+        // stepTime is written before stepIndex, so choose the message after step()
+        self.dispatchTextEvent();
+    }
+    dispatchTextEvent() {
+        let message = '';
+
+        if(this.isWorkoutStarted() && exists(this.intervals) && !empty(this.intervals)) {
+            const second = workoutSecond(
+                this.intervals,
+                this.intervalIndex,
+                this.stepIndex,
+                this.stepDuration,
+                this.stepTime,
+            );
+            message = messageAt(this.textEvents, second);
+        }
+
+        if(equals(message, this.textEvent)) return;
+
+        this.textEvent = message;
+        xf.dispatch('watch:workoutTextEvent', message);
     }
     lap() {
         const self = this;
@@ -403,6 +435,9 @@ xf.reg('watch:lapDuration',    (time, db) => db.intervalDuration = time);
 xf.reg('watch:stepDuration',   (time, db) => db.stepDuration     = time);
 xf.reg('watch:lapTime',        (time, db) => db.lapTime          = time);
 xf.reg('watch:stepTime',       (time, db) => db.stepTime         = time);
+xf.reg('watch:workoutTextEvent', (message, db) => {
+    db.workoutTextEvent = message;
+});
 xf.reg('watch:intervalIndex', (index, db) => db.intervalIndex    = index);
 xf.reg('watch:stepIndex',     (index, db) => {
     db.stepIndex         = index;
@@ -450,6 +485,92 @@ xf.reg('watch:stopped', (x, db) => db.watchStatus = 'stopped');
 xf.reg('watch:elapsed', models.session.elapsed);
 xf.reg('watch:lap', models.session.lap);
 xf.reg('watch:event', models.session.event);
+
+const defaultDuration = 10;
+
+function flattenMessages(intervals) {
+    const textEvents = [];
+
+    if(!exists(intervals) || empty(intervals)) return textEvents;
+
+    let cursor = 0;
+
+    for(let i = 0; i < intervals.length; i++) {
+        const steps = intervals[i].steps ?? [];
+
+        for(let s = 0; s < steps.length; s++) {
+            const step = steps[s];
+
+            if(!exists(step.duration)) continue;
+
+            const messages = step.messages ?? [];
+
+            for(let m = 0; m < messages.length; m++) {
+                const textEvent = messages[m];
+
+                if(!exists(textEvent.offset)) continue;
+
+                const start    = cursor + textEvent.offset;
+                const duration = exists(textEvent.duration) ? textEvent.duration : defaultDuration;
+
+                textEvents.push({
+                    start,
+                    end: start + duration,
+                    message: textEvent.message,
+                });
+            }
+
+            cursor += step.duration;
+        }
+    }
+
+    return textEvents;
+}
+
+
+function workoutSecond(intervals, intervalIndex, stepIndex, stepDuration, stepTime) {
+    if(!exists(intervals) || empty(intervals)) return 0;
+
+    let cursor = 0;
+
+    for(let i = 0; i < intervalIndex; i++) {
+        const steps = intervals[i]?.steps ?? [];
+
+        for(let s = 0; s < steps.length; s++) {
+            if(exists(steps[s].duration)) cursor += steps[s].duration;
+        }
+    }
+
+    const steps = intervals[intervalIndex]?.steps ?? [];
+
+    for(let s = 0; s < stepIndex; s++) {
+        if(exists(steps[s]) && exists(steps[s].duration)) {
+            cursor += steps[s].duration;
+        }
+    }
+
+    if(exists(stepDuration)) {
+        cursor += stepDuration - stepTime;
+    }
+
+    return cursor;
+}
+
+function messageAt(textEvents, second) {
+    let message = '';
+
+    if(!exists(textEvents) || empty(textEvents)) return message;
+
+    for(let i = 0; i < textEvents.length; i++) {
+        const textEvent = textEvents[i];
+
+        if(second >= textEvent.start && second < textEvent.end) {
+            message = textEvent.message;
+        }
+    }
+
+    return message;
+}
 
 const watch = new Watch();
 

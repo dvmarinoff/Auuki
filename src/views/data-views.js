@@ -589,8 +589,16 @@ class WorkoutTextEvent extends DataView {
             prop: 'db:workoutTextEvent',
         };
     }
-    getValue(propValue) {
-        return propValue.meta.name;
+    render() {
+        const message = this.transform(this.state);
+
+        this.textContent = message;
+
+        if(empty(message)) {
+            this.classList.remove('active');
+        } else {
+            this.classList.add('active');
+        }
     }
 }
 
