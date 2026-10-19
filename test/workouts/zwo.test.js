@@ -71,16 +71,16 @@ describe('Zwo', () => {
                 <workout>
                     <SteadyState Duration="10" Power="0.50">
                         <textevent timeoffset="0" message="01 SteadyState 01 message +00 10s" duration="10" />
-                    <SteadyState/>
+                    </SteadyState>
                     <SteadyState Duration="20" Power="0.90">
                         <textevent timeoffset="0" message="02 SteadyState 01 message +00 10s" duration="10" />
                         <textevent timeoffset="10" message="02 SteadyState 02 message +10 10s" duration="10" />
-                    <SteadyState/>
+                    </SteadyState>
                     <SteadyState Duration="60" Power="0.50">
                         <textevent timeoffset="10" message="03 SteadyState 01 message +10 10s" duration="10" />
                         <textevent timeoffset="30" message="03 SteadyState 02 message +30 10s" duration="10" />
                         <textevent timeoffset="50" message="03 SteadyState 03 message +50 10s" duration="10" />
-                    <SteadyState/>
+                    </SteadyState>
                     <FreeRide Duration="10">
                         <textevent timeoffset="0" message="04 FreeRide 01 message +00 10s" duration="10" />
                     </FreeRide>
@@ -88,8 +88,8 @@ describe('Zwo', () => {
                         <textevent timeoffset="0" message="05 IntervalsT 01 interval 01 message +00 10s" duration="10" />
                         <textevent timeoffset="10" message="05 IntervalsT 02 interval 01 message +00 05s" duration="5" />
                         <textevent timeoffset="15" message="05 IntervalsT 03 interval 01 message +00 10s" duration="10" />
-                        <textevent timeoffset="20" message="05 IntervalsT 04 interval 01 message +00 05s" duration="5" />
-                    <IntervalsT/>
+                        <textevent timeoffset="25" message="05 IntervalsT 04 interval 01 message +00 05s" duration="5" />
+                    </IntervalsT>
                 </workout>
             </workout_file>`;
 
@@ -110,7 +110,7 @@ describe('Zwo', () => {
                 },
                 {element: 'SteadyState', Duration: 20, Power: 0.90, children: [
                     {element: 'TextEvent', duration: 10, timeoffset: 0, message: "02 SteadyState 01 message +00 10s"},
-                    {element: 'TextEvent', duration: 10, timeoffset: 0, message: "02 SteadyState 02 message +00 10s"}
+                    {element: 'TextEvent', duration: 10, timeoffset: 10, message: "02 SteadyState 02 message +10 10s"}
                 ]
                 },
                 {element: 'SteadyState', Duration: 60, Power: 0.50, children: [
@@ -124,10 +124,10 @@ describe('Zwo', () => {
                     ]
                 },
                 {element: 'IntervalsT', Repeat: 2, OnDuration: 10, OffDuration: 5, OnPower: 1.21, OffPower: 0.7, children: [
-                    {element: 'TextEvent', duration: 10, timeoffset: 0, message: "05 IntervalsT 01 message +00 10s"},
-                    {element: 'TextEvent', duration: 5, timeoffset: 10, message: "05 IntervalsT 02 message +10 5s"},
-                    {element: 'TextEvent', duration: 10, timeoffset: 15, message: "05 IntervalsT 03 message +15 10s"},
-                    {element: 'TextEvent', duration: 5, timeoffset: 20, message: "05 IntervalsT 04 message +20 5s"}
+                    {element: 'TextEvent', duration: 10, timeoffset: 0, message: "05 IntervalsT 01 interval 01 message +00 10s"},
+                    {element: 'TextEvent', duration: 5, timeoffset: 10, message: "05 IntervalsT 02 interval 01 message +00 05s"},
+                    {element: 'TextEvent', duration: 10, timeoffset: 15, message: "05 IntervalsT 03 interval 01 message +00 10s"},
+                    {element: 'TextEvent', duration: 5, timeoffset: 25, message: "05 IntervalsT 04 interval 01 message +00 05s"}
                     ]
                 }
             ],
@@ -202,16 +202,16 @@ describe('Zwo', () => {
                 <workout>
                     <SteadyState Duration="10" Power="0.50">
                         <textevent timeoffset="0" message="01 SteadyState 01 message +00 10s" duration="10" />
-                    <SteadyState/>
+                    </SteadyState>
                     <SteadyState Duration="20" Power="0.90">
                         <textevent timeoffset="0" message="02 SteadyState 01 message +00 10s" duration="10" />
                         <textevent timeoffset="10" message="02 SteadyState 02 message +10 10s" duration="10" />
-                    <SteadyState/>
+                    </SteadyState>
                     <SteadyState Duration="60" Power="0.50">
                         <textevent timeoffset="10" message="03 SteadyState 01 message +10 10s" duration="10" />
                         <textevent timeoffset="30" message="03 SteadyState 02 message +30 10s" duration="10" />
                         <textevent timeoffset="50" message="03 SteadyState 03 message +50 10s" duration="10" />
-                    <SteadyState/>
+                    </SteadyState>
                     <FreeRide Duration="10">
                         <textevent timeoffset="0" message="04 FreeRide 01 message +00 10s" duration="10" />
                     </FreeRide>
@@ -219,8 +219,8 @@ describe('Zwo', () => {
                         <textevent timeoffset="0" message="05 IntervalsT 01 interval 01 message +00 10s" duration="10" />
                         <textevent timeoffset="10" message="05 IntervalsT 02 interval 01 message +00 05s" duration="5" />
                         <textevent timeoffset="15" message="05 IntervalsT 03 interval 01 message +00 10s" duration="10" />
-                        <textevent timeoffset="20" message="05 IntervalsT 04 interval 01 message +00 05s" duration="5" />
-                    <IntervalsT/>
+                        <textevent timeoffset="25" message="05 IntervalsT 04 interval 01 message +00 05s" duration="5" />
+                    </IntervalsT>
                 </workout>
             </workout_file>`;
 
@@ -241,15 +241,15 @@ describe('Zwo', () => {
                     {duration: 10, offset: 0, message: "01 SteadyState 01 message +00 10s"},
                 ]}]},
                 {duration: 20, steps: [{duration: 20, power: 0.90, messages: [
-                    {duration: 10, offset: 10, message: "02 SteadyState 01 message +10 10s"},
-                    {duration: 10, offset: 20, message: "02 SteadyState 02 message +20 10s"},
+                    {duration: 10, offset: 0, message: "02 SteadyState 01 message +00 10s"},
+                    {duration: 10, offset: 10, message: "02 SteadyState 02 message +10 10s"},
                 ]}]},
                 {duration: 60, steps: [{duration: 60, power: 0.50, messages: [
                     {duration: 10, offset: 10, message: "03 SteadyState 01 message +10 10s"},
                     {duration: 10, offset: 30, message: "03 SteadyState 02 message +30 10s"},
                     {duration: 10, offset: 50, message: "03 SteadyState 03 message +50 10s"},
                 ]}]},
-                {duration: 10, steps: [{duration: 10, power: 0.50, messages: [
+                {duration: 10, steps: [{duration: 10, power: 0, slope: 0, messages: [
                     {duration: 10, offset: 0, message: "04 FreeRide 01 message +00 10s"},
                 ]}]},
                 {duration: 10, steps: [{duration: 10, power: 1.21, messages: [
@@ -262,7 +262,7 @@ describe('Zwo', () => {
                     {duration: 10, offset: 0, message: "05 IntervalsT 03 interval 01 message +00 10s"},
                 ]}]},
                 {duration: 5, steps: [{duration: 5, power: 0.70, messages: [
-                    {duration: 5, offset: 0, message: "05 IntervalsT 04 interval 01 message +00 5s"},
+                    {duration: 5, offset: 0, message: "05 IntervalsT 04 interval 01 message +00 05s"},
                 ]}]},
             ],
         };
