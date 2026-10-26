@@ -254,6 +254,7 @@ body {
 
     --black-opacity-01:  rgba(0,0,0, 0.1);
     --black-opacity-02:  rgba(0,0,0, 0.2);
+    --black-opacity-05:  rgba(0,0,0, 0.5);
     --white-opacity-01:  rgba(255,255,255, 0.1);
     --white-opacity-03:  rgba(255,255,255, 0.3);
 }
@@ -1094,6 +1095,33 @@ div.graph--bar-group {
     height: var(--graph-height);
     z-index: 1;
     pointer-events: none;
+}
+
+#workout-text-event {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0.8em 1em;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: var(--ssb-font-family);
+    font-size: 2.0em;
+    font-weight: bold;
+    line-height: 1.25em;
+    color: #fff;
+    background-color: var(--progress);
+    pointer-events: none;
+}
+
+#workout-text-event.active {
+    display: flex;
 }
 
 auto-start-counter {
