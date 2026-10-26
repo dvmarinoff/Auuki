@@ -10,6 +10,7 @@
 .cache
 notes.txt
 env.js
-package-lock.json
+.env
+.env.*
 .parcel-cache/
 
