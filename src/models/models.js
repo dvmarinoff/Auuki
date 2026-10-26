@@ -204,7 +204,7 @@ class Sources extends Model {
             heartRateZStack: 0,
             // ['cadence', 'cadenceLap', 'cadenceAvg', 'cadenceTarget']
             cadenceZStack: 0,
-            // ['powerAvg', 'powerLap', 'kcal']
+            // ['powerLap', 'powerAvg', 'kcal', 'virtualGear']
             kcalZStack: 0,
             // ['graph', 'power']
             graphZStack: 0,
@@ -1561,6 +1561,46 @@ class SpeedState extends VirtualState {
     }
 }
 
+// 0 means no gear report has arrived yet.
+// A real gear is 1 through 254. The protocol's highest set byte is 0xFF,
+// and that byte decodes to gear 254.
+class VirtualGear extends Model {
+    postInit(args = {}) {
+        this.min = existance(args.min, 1);
+        this.max = existance(args.max, 254);
+    }
+    defaultValue() { return 0; }
+    apply(gear, messages = []) {
+        const list = isArray(messages) ? messages : [];
+        let next = gear;
+
+        for(let i = 0; i < list.length; i++) {
+            next = this.applyOne(next, list[i]);
+        }
+
+        return next;
+    }
+    applyOne(gear, message) {
+        if(!message) return gear;
+
+        if(message.action === 'shiftUp' && message.state === 'pressed') {
+            if(gear < this.min) return this.min;
+            return clamp(this.min, this.max, gear + 1);
+        }
+
+        if(message.action === 'shiftDown' && message.state === 'pressed') {
+            if(gear <= this.min) return gear;
+            return gear - 1;
+        }
+
+        if(message.action === 'gearSet' && message.state === 'value' && Number.isFinite(message.value)) {
+            return clamp(this.min, this.max, message.value);
+        }
+
+        return gear;
+    }
+}
+
 class TSS {
     // TSS = (t * NP * IF) / (FTP * 3600) * 100
     // NP:
@@ -1601,6 +1641,8 @@ const volume = new Volume({prop: 'volume', storage: LocalStorageItem});
 const measurement = new Measurement({prop: 'measurement', storage: LocalStorageItem});
 const dataTileSwitch = new DataTileSwitch({prop: 'dataTileSwitch', storage: LocalStorageItem});
 
+const virtualGear = new VirtualGear({prop: 'virtualGear'});
+
 const power1s = new PropInterval({prop: 'db:power', effect: 'power1s', interval: 1000});
 const power3s = new PropInterval({prop: 'db:power', effect: 'power3s', interval: 3000});
 const powerInZone = new PowerInZone({ftpModel: ftp});
@@ -1629,6 +1671,7 @@ let models = {
     powerAvg,
     powerInZone,
     kcal,
+    virtualGear,
 
     heartRateLap,
     heartRateAvg,

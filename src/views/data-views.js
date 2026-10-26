@@ -922,6 +922,23 @@ class KcalAvg extends DataView {
 
 customElements.define('kcal-avg', KcalAvg);
 
+class VirtualGearValue extends DataView {
+    getDefaults() {
+        return {
+            prop: 'db:virtualGear',
+        };
+    }
+    subs() {
+        xf.sub(`${this.prop}`, this.onUpdate.bind(this), this.signal);
+    }
+    transform(state) {
+        if(state === 0) return '--';
+        return state;
+    }
+}
+
+customElements.define('virtual-gear', VirtualGearValue);
+
 class PowerInZone extends HTMLElement {
     constructor() {
         super();
