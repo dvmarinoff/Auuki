@@ -3,19 +3,20 @@ import { ControlMode, } from '../ble/enums.js';
 
 function Keyboard() {
 
-    const isKeyUp    = (code) => code === 'ArrowUp';
-    const isKeyDown  = (code) => code === 'ArrowDown';
-    const isKeyE     = (code) => code === 'KeyE';
-    const isKeyR     = (code) => code === 'KeyR';
-    const isKeyS     = (code) => code === 'KeyS';
-    const isKeyL     = (code) => code === 'KeyL';
-    const isKeySpace = (code) => code === 'Space';
+    const isKeyUp    = (code, key) => code === 'ArrowUp' || key === 'ArrowUp';
+    const isKeyDown  = (code, key) => code === 'ArrowDown' || key === 'ArrowDown';
+    const isKeyE     = (code, key) => code === 'KeyE' || key.toLowerCase() === 'e';
+    const isKeyR     = (code, key) => code === 'KeyR' || key.toLowerCase() === 'r';
+    const isKeyS     = (code, key) => code === 'KeyS' || key.toLowerCase() === 's';
+    const isKeyL     = (code, key) => code === 'KeyL' || key.toLowerCase() === 'l';
+    const isKeySpace = (code, key) => code === 'Space' || key === ' ';
 
     window.addEventListener('keydown', onKeydown.bind(this));
 
     function onKeydown(e) {
         let keyCode = e.keyCode;
-        let code = e.code;
+        let code = e.code || '';
+        let key = e.key || '';
 
         if(e.isComposing ||
             keyCode === 229 ||
@@ -26,27 +27,27 @@ function Keyboard() {
             return;
         }
 
-        if(isKeyUp(code)) {
+        if(isKeyUp(code, key)) {
             e.preventDefault();
             xf.dispatch('key:up');
         }
-        if(isKeyDown(code)) {
+        if(isKeyDown(code, key)) {
             e.preventDefault();
             xf.dispatch('key:down');
         }
-        if(isKeyS(code)) {
+        if(isKeyS(code, key)) {
             xf.dispatch('key:s');
         }
-        if(isKeyR(code)) {
+        if(isKeyR(code, key)) {
             xf.dispatch('key:r');
         }
-        if(isKeyE(code)) {
+        if(isKeyE(code, key)) {
             xf.dispatch('key:e');
         }
-        if(isKeyL(code)) {
+        if(isKeyL(code, key)) {
             xf.dispatch('key:l');
         }
-        if(isKeySpace(code)) {
+        if(isKeySpace(code, key)) {
             e.preventDefault();
             xf.dispatch('key:space');
         }
