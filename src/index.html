@@ -1389,6 +1389,40 @@
                         </div>
                     </div> <!-- end moxy-monitor settings -->
 
+                    <!-- open bike control settings -->
+                    <div class="device-card">
+                        <div class="device-card--cont">
+                            <div class="device-card--header">
+                                <div></div>
+                                <div class="device-card--header--label">OpenBikeControl</div>
+                                <battery-level for="ble:openBikeControl">
+                                    <div class="battery--level"></div>
+                                </battery-level>
+                            </div>
+                            <div class="device-card--body">
+                                <div class="device-card--body--row">
+                                    <connection-switch for="ble:openBikeControl"
+                                                    class="connection-icon-switch"
+                                                    indicatorClass="connection-icon-switch--indicator">
+
+                                        <svg class="connection-icon-switch--icon icon">
+                                            <use href="#icon--bluetooth"></use>
+                                        </svg>
+                                        <div class="connection-icon-switch--indicator off"></div>
+                                    </connection-switch>
+                                    <div class="device-card--tile">
+                                        <h3 class="device-card--tile--header">Name</h3>
+                                        <data-view class="data-view device-card--tile--value"
+                                                prop="ble:openBikeControl:name">--</data-view>
+                                    </div>
+                                    <div class="device-card--tile"></div>
+                                    <div class="device-card--tile"></div>
+                                    <div class="device-card--tile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end open bike control settings -->
+
                     <!-- Options -->
                     <div class="list--sub-section">
                         <div class="list--row--outer">

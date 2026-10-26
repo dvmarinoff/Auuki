@@ -113,6 +113,18 @@ function ReactiveConnectable(args = {}) {
         if('skinTemperature' in data) {
             xf.dispatch(`skinTemperature`, data.skinTemperature);
         }
+
+        if('virtualGearShifting' in data) {
+            xf.dispatch(`${getIdentifier()}:virtualGearShifting`, data.virtualGearShifting);
+        }
+
+        if('uiControls' in data) {
+            xf.dispatch(`${getIdentifier()}:uiControls`, data.uiControls);
+        }
+
+        if('trainingControls' in data) {
+            xf.dispatch(`${getIdentifier()}:trainingControls`, data.trainingControls);
+        }
     }
 
     async function onSwitch() {

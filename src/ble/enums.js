@@ -13,6 +13,7 @@ const Device = {
     raceController: 'raceController',
     smo2: 'smo2',
     coreTemp: 'coreTemp',
+    openBikeControl: 'openBikeControl',
     generic: 'generic',
 };
 
