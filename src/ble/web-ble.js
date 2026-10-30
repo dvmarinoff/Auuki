@@ -11,6 +11,7 @@ const services = {
     raceController:      '00000001-19ca-4651-86e5-fa29dcdd09d1',
     smo2:                '6404d801-4cb9-11e8-b566-0800200c9a66',
     coreTemp:            '00002100-5b1e-4347-b07c-97b514dae121',
+    openBikeControl:     'd273f680-d548-419d-b9d1-fa0472345229',
 };
 
 const characteristics = {
@@ -65,6 +66,11 @@ const characteristics = {
     // CoreTemp
     coreBodyTemp:                  '00002101-5b1e-4347-b07c-97b514dae121',
     corePrivate:                   '00004200-f366-40b2-ac37-70cce0aa83b1',
+
+    // OpenBikeControl
+    buttonState:                   'd273f681-d548-419d-b9d1-fa0472345229',
+    hapticFeedback:                'd273f682-d548-419d-b9d1-fa0472345229',
+    appInformation:                'd273f683-d548-419d-b9d1-fa0472345229',
 
     // others
     sensorLocation:                    '00002a5d-0000-1000-8000-00805f9b34fb',
@@ -125,6 +131,13 @@ function Filters() {
         };
     }
 
+    function openBikeControl() {
+        return {
+            filters: [{services: [uuids.openBikeControl]}],
+            optionalServices: [uuids.battery],
+        };
+    }
+
     function all() {
         return {acceptAllDevices: true};
     }
@@ -152,6 +165,7 @@ function Filters() {
                 {services: [uuids.smo2]},
                 {services: [uuids.heartRate]},
                 {services: [uuids.coreTemp]},
+                {services: [uuids.openBikeControl]},
             ],
             exclusionFilters,
         };
@@ -164,6 +178,7 @@ function Filters() {
         powerMeter,
         smo2,
         coreTemp,
+        openBikeControl,
         all,
         generic,
     });

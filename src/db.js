@@ -36,6 +36,7 @@ let db = {
     cadenceLap: models.cadenceLap.default,
     kcal: models.kcal.default,
     powerAvg: models.powerAvg.default,
+    virtualGear: models.virtualGear.default,
     cadenceAvg: models.cadenceAvg.default,
     heartRateAvg: models.heartRateAvg.default,
 
@@ -159,6 +160,10 @@ xf.reg(`coreBodyTemperature`, (coreBodyTemperature, db) => {
 
 xf.reg(`skinTemperature`, (skinTemperature, db) => {
     db.skinTemperature = skinTemperature;
+});
+
+xf.reg('ble:openBikeControl:buttonState', (messages, db) => {
+    db.virtualGear = models.virtualGear.apply(db.virtualGear, messages);
 });
 
 xf.reg(models.sources.prop, (sources, db) => {
