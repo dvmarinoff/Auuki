@@ -62,6 +62,13 @@ describe('virtualGear', () => {
         ])).toBe(6);
     });
 
+    test('a workout button in the same list does not change the gear', () => {
+        expect(apply(2, [
+            {action: 'increaseDifficulty', state: 'pressed'},
+            shiftUp,
+        ])).toBe(3);
+    });
+
     test('an empty list keeps the current gear', () => {
         expect(apply(4, [])).toBe(4);
         expect(apply(0)).toBe(0);

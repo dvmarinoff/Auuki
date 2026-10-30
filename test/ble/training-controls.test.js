@@ -91,13 +91,20 @@ describe('decodeButtonState training controls', () => {
             0x01, 0x01, 0x01, 0x30, 0x01,
         ]).buffer);
 
-        expect(decodeButtonState(data)).toEqual({
-            virtualGearShifting: [
-                {id: 0x01, action: 'shiftUp', kind: 'digital', state: 'pressed'},
-            ],
-            trainingControls: [
-                {id: 0x30, action: 'increaseDifficulty', kind: 'digital', state: 'pressed'},
-            ],
-        });
+        expect(decodeButtonState(data)).toEqual([
+            {id: 0x01, action: 'shiftUp', kind: 'digital', state: 'pressed'},
+            {id: 0x30, action: 'increaseDifficulty', kind: 'digital', state: 'pressed'},
+        ]);
+    });
+
+    test('difficulty before a shift stays in that order', () => {
+        const data = new DataView(new Uint8Array([
+            0x01, 0x31, 0x01, 0x01, 0x01,
+        ]).buffer);
+
+        expect(decodeButtonState(data)).toEqual([
+            {id: 0x31, action: 'decreaseDifficulty', kind: 'digital', state: 'pressed'},
+            {id: 0x01, action: 'shiftUp', kind: 'digital', state: 'pressed'},
+        ]);
     });
 });

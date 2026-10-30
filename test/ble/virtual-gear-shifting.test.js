@@ -71,32 +71,26 @@ describe('decodeButtonState', () => {
             0x01, 0x01, 0x01, 0x14, 0x01,
         ]).buffer);
 
-        expect(decodeButtonState(data)).toEqual({
-            virtualGearShifting: [
-                {id: 0x01, action: 'shiftUp', kind: 'digital', state: 'pressed'},
-            ],
-            uiControls: [
-                {id: 0x14, action: 'select', kind: 'digital', state: 'pressed'},
-            ],
-        });
+        expect(decodeButtonState(data)).toEqual([
+            {id: 0x01, action: 'shiftUp', kind: 'digital', state: 'pressed'},
+            {id: 0x14, action: 'select', kind: 'digital', state: 'pressed'},
+        ]);
     });
 
-    test('a training control id is kept on its own list', () => {
+    test('a training control stays in the same list', () => {
         const data = new DataView(new Uint8Array([
             0x01, 0x30, 0x01,
         ]).buffer);
 
-        expect(decodeButtonState(data)).toEqual({
-            trainingControls: [
-                {id: 0x30, action: 'increaseDifficulty', kind: 'digital', state: 'pressed'},
-            ],
-        });
+        expect(decodeButtonState(data)).toEqual([
+            {id: 0x30, action: 'increaseDifficulty', kind: 'digital', state: 'pressed'},
+        ]);
     });
 
     test('a message that is not a button report is ignored', () => {
         const data = new DataView(new Uint8Array([0x03, 0x01, 0x00, 0x00]).buffer);
 
-        expect(decodeButtonState(data)).toEqual({});
+        expect(decodeButtonState(data)).toEqual([]);
     });
 
     test('a trailing odd byte is ignored', () => {
@@ -104,10 +98,8 @@ describe('decodeButtonState', () => {
             0x01, 0x02, 0x01, 0xFF,
         ]).buffer);
 
-        expect(decodeButtonState(data)).toEqual({
-            virtualGearShifting: [
-                {id: 0x02, action: 'shiftDown', kind: 'digital', state: 'pressed'},
-            ],
-        });
+        expect(decodeButtonState(data)).toEqual([
+            {id: 0x02, action: 'shiftDown', kind: 'digital', state: 'pressed'},
+        ]);
     });
 });

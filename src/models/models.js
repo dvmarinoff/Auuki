@@ -1583,17 +1583,17 @@ class VirtualGear extends Model {
     applyOne(gear, message) {
         if(!message) return gear;
 
-        if(message.action === 'shiftUp' && message.state === 'pressed') {
+        if(equals(message.action, 'shiftUp') && equals(message.state, 'pressed')) {
             if(gear < this.min) return this.min;
             return clamp(this.min, this.max, gear + 1);
         }
 
-        if(message.action === 'shiftDown' && message.state === 'pressed') {
+        if(equals(message.action, 'shiftDown') && equals(message.state, 'pressed')) {
             if(gear <= this.min) return gear;
             return gear - 1;
         }
 
-        if(message.action === 'gearSet' && message.state === 'value' && Number.isFinite(message.value)) {
+        if(equals(message.action, 'gearSet') && equals(message.state, 'value') && Number.isFinite(message.value)) {
             return clamp(this.min, this.max, message.value);
         }
 

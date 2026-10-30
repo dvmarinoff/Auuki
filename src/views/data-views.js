@@ -932,7 +932,7 @@ class VirtualGearValue extends DataView {
         xf.sub(`${this.prop}`, this.onUpdate.bind(this), this.signal);
     }
     transform(state) {
-        if(state === 0) return '--';
+        if(equals(state, 0)) return '--';
         return state;
     }
 }

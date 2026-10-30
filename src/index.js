@@ -2,6 +2,7 @@ import { xf } from './functions.js';
 import './db.js';
 import './views/views.js';
 import './ble/devices.js';
+import './ble/obc/controls.js';
 import './watch.js';
 import './course.js';
 import './lock.js';

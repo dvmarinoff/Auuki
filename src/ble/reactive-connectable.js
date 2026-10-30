@@ -1,4 +1,4 @@
-import { equals, exists, xf, print, } from '../functions.js';
+import { equals, exists, isArray, xf, print, } from '../functions.js';
 import { models } from '../models/models.js';
 import Connectable from './connectable.js';
 import { webBle } from './web-ble.js';
@@ -114,16 +114,8 @@ function ReactiveConnectable(args = {}) {
             xf.dispatch(`skinTemperature`, data.skinTemperature);
         }
 
-        if('virtualGearShifting' in data) {
-            xf.dispatch(`${getIdentifier()}:virtualGearShifting`, data.virtualGearShifting);
-        }
-
-        if('uiControls' in data) {
-            xf.dispatch(`${getIdentifier()}:uiControls`, data.uiControls);
-        }
-
-        if('trainingControls' in data) {
-            xf.dispatch(`${getIdentifier()}:trainingControls`, data.trainingControls);
+        if(isArray(data) && data.length > 0) {
+            xf.dispatch(`${getIdentifier()}:buttonState`, data);
         }
     }
 

@@ -162,7 +162,7 @@ xf.reg(`skinTemperature`, (skinTemperature, db) => {
     db.skinTemperature = skinTemperature;
 });
 
-xf.reg('ble:openBikeControl:virtualGearShifting', (messages, db) => {
+xf.reg('ble:openBikeControl:buttonState', (messages, db) => {
     db.virtualGear = models.virtualGear.apply(db.virtualGear, messages);
 });
 
