@@ -33,6 +33,11 @@ const coreTemp = ReactiveConnectable({
     filter: webBle.filters.coreTemp(),
 });
 
+const openBikeControl = ReactiveConnectable({
+    deviceType: Device.openBikeControl,
+    filter: webBle.filters.openBikeControl(),
+});
+
 // export {
 //     controllabe,
 //     heartRateMonitor,
