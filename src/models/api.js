@@ -69,6 +69,7 @@ function Router(args = {}) {
         const scope  = params.get('scope');
         const error  = params.get('error');
         const token = params.get('token');
+        const workoutUrl = params.get('workoutUrl');
 
         // switch
         if(error) {
@@ -96,6 +97,11 @@ function Router(args = {}) {
             xf.dispatch('action:auth', ':password:reset');
             return true;
         }
+        if(workoutUrl) {
+            xf.dispatch('ui:workout:load-url', workoutUrl);
+            clearParams();
+            return true;
+        }
         // clearParams();
         return false;
     }
@@ -113,4 +119,3 @@ function Router(args = {}) {
 
 
 export default API;
-
