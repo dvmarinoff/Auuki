@@ -2365,7 +2365,9 @@ battery-level {
 
 /* User Auth */
 
-#forgot--msg {
+#forgot--msg,
+#register--msg,
+#login--msg {
     font-size: 1.4em;
     padding: 1em;
 
@@ -2378,6 +2380,11 @@ battery-level {
     &.fail {
         color: var(--zone-red)
     }
+}
+#register--msg:empty,
+#login--msg:empty {
+    display: none;
+    padding: 0;
 }
 
 .auth, .profile {
@@ -2501,6 +2508,20 @@ battery-level {
 }
 #profile.active {
     display: block;
+}
+#account--management--cont {
+    display: flex;
+    justify-content: space-between;
+    max-width: var(--inner-max-width-fixed);
+    margin: 0 auto;
+}
+#account--delete--button {
+    color: #fff;
+    background-color: var(--red);
+    border-color: var(--red);
+}
+#account--delete--button:hover {
+    background-color: var(--zone-red);
 }
 
 @media (prefers-color-scheme: light) {

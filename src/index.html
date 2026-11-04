@@ -707,6 +707,7 @@
                                                     index="1">Login instead</div>
                                         </view-action>
                                     </div>
+                                    <div id="register--msg"></div>
                                 </form>
                                 <form id="login--form" class="login--form active">
                                     <h2 class="form--header">Login</h2>
@@ -744,6 +745,7 @@
                                             <div class="tab--button">Forgot</div>
                                         </view-action>
                                     </div>
+                                    <div id="login--msg"></div>
                                 </form>
                                 <form id="forgot--form" class="forgot--form">
                                     <h2 class="form--header">Forgot</h2>
@@ -816,12 +818,6 @@
 
                     <!-- profile -->
                     <div id="profile" class="profile">
-                        <div>
-                            <button id="logout--button"
-                                    class="btn"
-                                    type="button">Logout</button>
-
-                        </div>
                         <div class="list--sub-section app-connections">
                             <o-auth>
                                 <div class="list--row--outer">
@@ -892,6 +888,14 @@
                                 </div>
                             </o-auth>
                         </div> <!-- end connections -->
+                        <div id="account--management--cont">
+                            <button id="account--delete--button"
+                                    class="btn"
+                                    type="button">Delete Account</button>
+                            <button id="account--logout--button"
+                                    class="btn"
+                                    type="button">Logout</button>
+                        </div>
                     </div> <!-- end profile -->
 
                 </div> <!-- end profile--sub-tab -->

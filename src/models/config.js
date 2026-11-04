@@ -6,10 +6,12 @@ class Config {
 
     constructor() {
         this.env = {
-            // PWA_URI: "http://localhost:1234",
-            // API_URI: "http://localhost:8080",
-            PWA_URI: window.location.origin ?? "https://auuki.com",
-            API_URI: "https://api.auuki.com",
+            PWA_URI: "https://localhost:1234", // dev
+            API_URI: "https://localhost:8080", // dev
+            TURNSTILE_SITE_KEY: '1x00000000000000000000AA', // dev
+            // PWA_URI: window.location.origin ?? "https://auuki.com", // live
+            // API_URI: "https://api.auuki.com", // live
+            // TURNSTILE_SITE_KEY: '0x4AAAAAAA2IUz1CU0EU3E-O', // live
             STRAVA_CLIENT_ID: this.defaultStravaClientId,
             INTERVALS_CLIENT_ID: this.defaultIntervalsClientId,
             TRAINING_PEAKS_CLIENT_ID: this.defaultTrainingPeaksClientId,

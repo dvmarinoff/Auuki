@@ -1,4 +1,4 @@
-import { xf, empty, } from '../functions.js';
+import { equals, xf, empty, } from '../functions.js';
 import { models } from '../models/models.js';
 
 // TODO: This needs refactoring to something more general with
@@ -41,7 +41,8 @@ class AuthForms extends HTMLElement {
             //     $login: self.querySelector('#passkey--login--form'),
             //     $profile: document.querySelector('#profile'),
             // },
-            $logout: document.querySelector('#logout--button'),
+            $logout: document.querySelector('#account--logout--button'),
+            $deleteAccount: document.querySelector('#account--delete--button'),
             $error: document.querySelector('#auth-error--section'),
             $pwds: document.querySelectorAll('input[type="password"]'),
         };
@@ -55,7 +56,16 @@ class AuthForms extends HTMLElement {
             models.api.auth.logout();
         });
 
-        this.$forgotMsg = document.querySelector('#forgot--msg'),
+        this.el.$deleteAccount.addEventListener('pointerup', () => {
+            const proceed = confirm('Delete your account? This cannot be undone.');
+            if(proceed) {
+                models.api.auth.deleteAccount();
+            }
+        });
+
+        this.$forgotMsg = document.querySelector('#forgot--msg');
+        this.$registerMsg = document.querySelector('#register--msg');
+        this.$loginMsg = document.querySelector('#login--msg');
 
         xf.sub('action:auth', self.onAction.bind(this));
     }
@@ -120,12 +130,14 @@ class AuthForms extends HTMLElement {
             this.switch('$reset', this.el.password);
             return;
         }
-        if(action === ':password:profile') {
+        if(equals(action, ':password:profile')) {
             this.switch('$profile', this.el.password);
+            this.clearLoginNotice();
             return;
         }
-        if(action === ':password:logout') {
+        if(equals(action, ':password:logout')) {
             this.switch('$login', this.el.password);
+            this.clearLoginNotice();
             return;
         }
         // if(action === ':passkey:login') {
@@ -157,7 +169,37 @@ class AuthForms extends HTMLElement {
             this.$forgotMsg.classList.remove('success');
             this.$forgotMsg.classList.add('error');
         }
+        if(equals(action, ':password:verify-sent')) {
+            this.el.$error.classList.remove('active');
+            this.$registerMsg.textContent = 'Check your inbox and open the link promptly, then log in.';
+            this.$registerMsg.classList.remove('fail');
+            this.$registerMsg.classList.add('success');
+            return;
+        }
+        if(equals(action, ':password:login-unverified')) {
+            this.switch('$login', this.el.password);
+            this.$loginMsg.textContent = 'Confirm your email, then log in.';
+            this.$loginMsg.classList.remove('success');
+            this.$loginMsg.classList.add('fail');
+            return;
+        }
+        if(equals(action, ':password:verify-ok')) {
+            this.switch('$login', this.el.password);
+            this.$loginMsg.textContent = 'Email confirmed. You can log in now.';
+            this.$loginMsg.classList.remove('fail');
+            this.$loginMsg.classList.add('success');
+            return;
+        }
+        if(equals(action, ':password:verify-fail')) {
+            this.switch('$login', this.el.password);
+            this.$loginMsg.textContent = 'This confirmation link is invalid, expired, or already used.';
+            this.$loginMsg.classList.remove('success');
+            this.$loginMsg.classList.add('fail');
+            return;
+        }
         if(action === ':error') {
+            this.$loginMsg.textContent = '';
+            this.$registerMsg.textContent = '';
             this.error('Wrong credentials or Authentication error');
             return;
         }
@@ -184,6 +226,11 @@ class AuthForms extends HTMLElement {
         if(target) {
             elements[target].classList.add('active');
         }
+    }
+    clearLoginNotice() {
+        this.$loginMsg.textContent = '';
+        this.$loginMsg.classList.remove('success');
+        this.$loginMsg.classList.remove('fail');
     }
     error(msg = '') {
         if(msg !== '') {

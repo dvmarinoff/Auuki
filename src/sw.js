@@ -181,7 +181,9 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-    console.log(`SW: fetch: `, e.request.url);
+    // The path only
+    const path = new URL(e.request.url).pathname;
+    console.log(`SW: fetch: `, path);
 
     // Cache falling back to the Network
     e.respondWith(
