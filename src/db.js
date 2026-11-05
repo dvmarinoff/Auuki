@@ -107,6 +107,7 @@ let db = {
 
     // Services
     services: {strava: false, intervals: false, trainingPeaks: false},
+    account: {identifier: ''},
 };
 
 
@@ -407,6 +408,9 @@ xf.reg('auth', (x, db) => {
 
 xf.reg('services', (x, db) => {
     db.services = Object.assign(db.services, x);
+});
+xf.reg('account', (x, db) => {
+    db.account = {identifier: x?.identifier ?? ''};
 });
 
 

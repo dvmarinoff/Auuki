@@ -1878,6 +1878,37 @@ class CompatibilityCheck extends HTMLElement {
 
 customElements.define('compatibility-check', CompatibilityCheck);
 
+class AccountBadge extends HTMLElement {
+    constructor() {
+        super();
+    }
+    connectedCallback() {
+        this.abortController = new AbortController();
+        this.signal = { signal: this.abortController.signal };
+
+        this.$image = this.querySelector('#account--badge');
+        this.$identifier = this.querySelector('#account--identifier');
+
+        xf.sub('db:account', this.onAccount.bind(this), this.signal);
+    }
+    disconnectedCallback() {
+        this.abortController.abort();
+    }
+    onAccount(account) {
+        const identifier = account?.identifier ?? '';
+        this.render(identifier);
+    }
+    render(identifier) {
+        const text = String(identifier).trim();
+        const letter = equals(text, '') ? '' : text.slice(0, 1);
+
+        this.$identifier.textContent = text;
+        this.$image.textContent = letter;
+    }
+}
+
+customElements.define('account-badge', AccountBadge);
+
 export {
     DataView,
 
@@ -1916,4 +1947,6 @@ export {
     NavigationStack,
     ViewAction,
     BatteryLevel,
+
+    AccountBadge,
 }

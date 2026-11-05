@@ -2509,11 +2509,29 @@ battery-level {
 #profile.active {
     display: block;
 }
-#account--management--cont {
+#account--management--cont .list--row--inner {
     display: flex;
     justify-content: space-between;
     max-width: var(--inner-max-width-fixed);
     margin: 0 auto;
+}
+#account--badge {
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 5rem;
+    height: 5rem;
+    margin: 1rem auto 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--white);
+    background-color: var(--zone-gray);
+    border: 1px solid var(--zone-gray);
+    border-radius: 50%;
+}
+#account--identifier {
+    font-size: 1.2em;
 }
 #account--delete--button {
     color: #fff;

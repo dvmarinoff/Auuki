@@ -818,6 +818,13 @@
 
                     <!-- profile -->
                     <div id="profile" class="profile">
+                        <account-badge>
+                            <div>
+                                <div id="account--badge"></div>
+                                <div id="account--identifier"></div>
+                            </div>
+                        </account-badge>
+
                         <div class="list--sub-section app-connections">
                             <o-auth>
                                 <div class="list--row--outer">
@@ -888,14 +895,25 @@
                                 </div>
                             </o-auth>
                         </div> <!-- end connections -->
+
                         <div id="account--management--cont">
-                            <button id="account--delete--button"
-                                    class="btn"
-                                    type="button">Delete Account</button>
-                            <button id="account--logout--button"
-                                    class="btn"
-                                    type="button">Logout</button>
-                        </div>
+                            <div class="list--row--outer">
+                                <div class="list--row--inner list--heading--cont">
+                                    <h2 class="list--sub-heading">Account</h2>
+                                </div>
+                            </div>
+                            <div class="list--row--outer">
+                                <div class="list--row--inner">
+                                    <button id="account--delete--button"
+                                            class="btn"
+                                            type="button">Delete Account</button>
+                                    <button id="account--logout--button"
+                                            class="btn"
+                                            type="button">Logout</button>
+                                </div>
+                            </div>
+                        </div> <!-- end account-management -->
+
                     </div> <!-- end profile -->
 
                 </div> <!-- end profile--sub-tab -->

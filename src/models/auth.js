@@ -191,6 +191,7 @@ function Auth(args = {}) {
             }
 
             console.log(`:api :delete-account :success`);
+            xf.dispatch('account', {identifier: ''});
             xf.dispatch('action:auth', ':password:logout');
 
             _loggedIn = false;
@@ -236,6 +237,7 @@ function Auth(args = {}) {
             }
 
             console.log(`:api :logout :success`);
+            xf.dispatch('account', {identifier: ''});
             xf.dispatch('action:auth', ':password:logout');
 
             _loggedIn = false;
@@ -384,6 +386,7 @@ function Auth(args = {}) {
                 intervals.update();
                 trainingPeaks.update();
 
+                xf.dispatch('account', {identifier: body?.result?.identifier ?? ''});
                 xf.dispatch('action:auth', ':password:profile');
                 xf.dispatch('services', body?.result);
                 return body.result;
@@ -394,6 +397,7 @@ function Auth(args = {}) {
                 if(_turnstileLoaded) {
                 }
 
+                xf.dispatch('account', {identifier: ''});
                 xf.dispatch('action:status', ':logout');
                 xf.dispatch('action:auth', ':password:login');
                 return {strava: false, intervals: false, trainingPeaks: false};
