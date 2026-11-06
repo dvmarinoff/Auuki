@@ -33,21 +33,16 @@ function Strava(args = {}) {
 
     async function disconnect() {
         try {
-            const stravaResponse = await fetch(
-                "https://www.strava.com/oauth/deauthorize",
-                {method: 'POST',}
-            );
-            console.log(`:oauth :strava :disconnect`);
-            const stravaBody = await stravaResponse.text();
-
             const apiResponse = await fetch(
                 api_uri+`/api/strava/deauthorize`,
                 {method: 'POST', credentials: 'include',},
             );
 
-            const apiBody = await apiResponse.text();
-
-            xf.dispatch(`services`, {strava: false});
+            if(apiResponse.ok) {
+                xf.dispatch(`services`, {strava: false});
+            } else {
+                console.log(`:strava :deauthorize :error `, apiResponse.status);
+            }
         } catch (e) {
             console.log(`:strava :deauthorize :error `, e);
         }

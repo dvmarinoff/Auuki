@@ -1,3 +1,4 @@
+import { equals, isString } from '../functions.js';
 import { uuid } from '../storage/uuid.js';
 
 const DialogMsg = {
@@ -11,11 +12,16 @@ const OAuthService = {
 };
 
 function StateParam() {
+    const storageKey = 'oauth-state';
+
     function encode(name) {
         const param = name+'_'+uuid();
         return param;
     }
     function decode(param) {
+        if(!isString(param)) {
+            return { service: '', id: '' };
+        }
         const parts = param.split('_');
 
         return {
@@ -24,10 +30,25 @@ function StateParam() {
         };
     }
 
-    function store() {
+    function store(state) {
+        if(!isString(state)) {
+            return;
+        }
+        sessionStorage.setItem(storageKey, state);
     }
 
     function restore() {
+        const saved = sessionStorage.getItem(storageKey);
+        return isString(saved) ? saved : '';
+    }
+
+    function consume(state) {
+        const saved = restore();
+        const matches = !equals(saved, '') && equals(saved, state);
+        if(matches) {
+            sessionStorage.removeItem(storageKey);
+        }
+        return matches;
     }
 
     return Object.freeze({
@@ -35,6 +56,7 @@ function StateParam() {
         decode,
         store,
         restore,
+        consume,
     });
 }
 

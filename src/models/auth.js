@@ -1,4 +1,4 @@
-import { exists, xf, once, print, } from '../functions.js';
+import { exists, equals, xf, once, print, } from '../functions.js';
 import { DialogMsg } from './enums.js';
 import { uuid } from '../storage/uuid.js';
 import config from './config.js';
@@ -6,12 +6,28 @@ import strava from './strava.js';
 import intervals from './intervals.js';
 import trainingPeaks from './training-peaks.js';
 
+function authFailureAction(json, fallback = ':error') {
+    const message = json?.error?.message;
+    if(equals(message, 'PASSWORD_POLICY')) {
+        return ':password:policy';
+    }
+    if(equals(message, 'EMAIL_INVALID')) {
+        return ':email:invalid';
+    }
+    if(equals(message, 'TOO_MANY_ATTEMPTS')) {
+        return ':too-many-attempts';
+    }
+    return fallback;
+}
+
 function Auth(args = {}) {
     const api_uri = config.get().API_URI;
     const pwa_uri = config.get().PWA_URI;
+    const turnstile_site_key = config.get().TURNSTILE_SITE_KEY;
 
     let _loggedIn = false;
     let _hasApi = true;
+    let _resetToken = '';
 
     let _turnstileLoaded = false;
     let _turnstileId;
@@ -39,8 +55,8 @@ function Auth(args = {}) {
         if('turnstile' in window) {
             console.log(`:turnstile :render ${_turnstileId}`);
 
-            _turnstileId = window.turnstile.render("#cf-turnstile-container", {
-                sitekey: "0x4AAAAAAA2IUz1CU0EU3E-O",
+            _turnstileId = window.turnstile.render('#cf-turnstile-container', {
+                sitekey: turnstile_site_key,
             });
 
             _expired = false;
@@ -104,13 +120,12 @@ function Auth(args = {}) {
 
             if(json.error) {
                 console.log(':api :register :error');
-                xf.dispatch('action:auth', ':error');
+                xf.dispatch('action:auth', authFailureAction(json));
                 return;
             }
             if(json?.result?.success) {
                 console.log(':api :register :success');
-                xf.dispatch('action:nav', 'settings:profile');
-                xf.dispatch('action:auth', ':password:login');
+                xf.dispatch('action:auth', ':password:verify-sent');
                 return;
             }
 
@@ -143,8 +158,13 @@ function Auth(args = {}) {
             const json = await response.json();
 
             if(json.error) {
+                if(equals(json.error.message, 'EMAIL_NOT_VERIFIED')) {
+                    console.log(`:api :login :unverified`);
+                    xf.dispatch('action:auth', ':password:login-unverified');
+                    return;
+                }
                 console.log(`:api :login :error`);
-                xf.dispatch('action:auth', ':error');
+                xf.dispatch('action:auth', authFailureAction(json));
                 return;
             }
 
@@ -161,20 +181,47 @@ function Auth(args = {}) {
         }
     }
 
-    async function logout() {
-        const url = `${api_uri}/api/logout`;
+    function holdResetToken(token) {
+        _resetToken = token;
+    }
+
+    async function deleteAccount(password) {
+        const url = `${api_uri}/api/account/delete`;
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json',},
                 credentials: 'include',
-                body: JSON.stringify({logout: true}),
+                body: JSON.stringify({delete: true, password}),
             });
 
-            const result = await response.json();
+            if(!response.ok) {
+                console.log(`:api :delete-account :fail :with ${response.status}`);
+                const json = await response.json().catch(() => ({}));
+                const message = json?.error?.message;
+                if(equals(message, 'DELETE_PASSWORD')) {
+                    xf.dispatch('action:auth', ':password:delete-mismatch');
+                    return;
+                }
+                if(equals(message, 'TOO_MANY_ATTEMPTS')) {
+                    xf.dispatch('action:auth', ':password:delete-limited');
+                    return;
+                }
+                xf.dispatch('action:auth', ':error');
+                return;
+            }
 
-            console.log(`:api :logout :success`);
+            const result = await response.json();
+            if(!result?.result?.success) {
+                console.log(`:api :delete-account :fail`);
+                xf.dispatch('action:auth', ':error');
+                return;
+            }
+
+            console.log(`:api :delete-account :success`);
+            xf.dispatch('action:auth', ':password:deleted');
+            xf.dispatch('account', {identifier: ''});
             xf.dispatch('action:auth', ':password:logout');
 
             _loggedIn = false;
@@ -188,6 +235,80 @@ function Auth(args = {}) {
             status();
         } catch(error) {
             console.log(error);
+            xf.dispatch('action:auth', ':error');
+        }
+    }
+
+    async function logout() {
+        const url = `${api_uri}/api/logout`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json',},
+                credentials: 'include',
+                body: JSON.stringify({logout: true}),
+            });
+
+            // 403 means the cookie was already rejected, so the person is logged out.
+            if(!response.ok && !equals(response.status, 403)) {
+                console.log(`:api :logout :fail :with ${response.status}`);
+                xf.dispatch('action:auth', ':error');
+                return;
+            }
+
+            if(response.ok) {
+                const result = await response.json();
+                if(!equals(result?.result?.logout, true)) {
+                    console.log(`:api :logout :fail`);
+                    xf.dispatch('action:auth', ':error');
+                    return;
+                }
+            }
+
+            console.log(`:api :logout :success`);
+            xf.dispatch('account', {identifier: ''});
+            xf.dispatch('action:auth', ':password:logout');
+
+            _loggedIn = false;
+
+            if(_turnstileLoaded) {
+                renderTurnstile();
+            } else {
+                loadTurnstile();
+            }
+
+            status();
+        } catch(error) {
+            console.log(error);
+            xf.dispatch('action:auth', ':error');
+        }
+    }
+
+    async function verifyEmail(rawToken) {
+        const url = `${api_uri}/api/verify-email`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json',},
+                body: JSON.stringify({token: rawToken}),
+            });
+
+            if(response.ok) {
+                const json = await response.json();
+                if(equals(json?.result?.success, true)) {
+                    console.log(`:api :verify :success`);
+                    xf.dispatch('action:auth', ':password:verify-ok');
+                    return;
+                }
+            }
+
+            console.log(`:api :verify :fail`);
+            xf.dispatch('action:auth', ':password:verify-fail');
+        } catch(_error) {
+            console.log(`:api :verify :fail`);
+            xf.dispatch('action:auth', ':password:verify-fail');
         }
     }
 
@@ -215,7 +336,8 @@ function Auth(args = {}) {
                 xf.dispatch('action:auth', ':forgot:success');
             } else {
                 console.log(`:api :forgot :fail :with ${response.status}`);
-                xf.dispatch('action:auth', ':forgot:fail');
+                const json = await response.json().catch(() => ({}));
+                xf.dispatch('action:auth', authFailureAction(json, ':forgot:fail'));
             }
         } catch(error) {
             console.log(`:api :forgot :fail`);
@@ -226,8 +348,7 @@ function Auth(args = {}) {
 
     // {data: {FormData}} -> Void
     async function reset(args = {}) {
-        const params = (new URL(document.location)).searchParams;
-        const token = params.get('token') ?? '';
+        const token = _resetToken;
 
         const url = `${api_uri}/api/reset-password`;
 
@@ -250,11 +371,12 @@ function Auth(args = {}) {
 
             if(response.ok) {
                 console.log(`:api :reset :success`);
-                window.history.pushState({}, document.title, window.location.pathname);
+                _resetToken = '';
                 xf.dispatch('action:auth', ':password:login');
             } else {
                 console.error(`:api :reset :fail`);
-                xf.dispatch('action:auth', ':error');
+                const json = await response.json().catch(() => ({}));
+                xf.dispatch('action:auth', authFailureAction(json));
             }
         } catch(e) {
             console.error(`:api :reset :error `, e);
@@ -287,13 +409,12 @@ function Auth(args = {}) {
                     removeTurnstile();
                 }
 
-                console.log(`:status`, body.result);
-
                 config.setServices(body.result.services);
                 strava.update();
                 intervals.update();
                 trainingPeaks.update();
 
+                xf.dispatch('account', {identifier: body?.result?.identifier ?? ''});
                 xf.dispatch('action:auth', ':password:profile');
                 xf.dispatch('services', body?.result);
                 return body.result;
@@ -304,6 +425,7 @@ function Auth(args = {}) {
                 if(_turnstileLoaded) {
                 }
 
+                xf.dispatch('account', {identifier: ''});
                 xf.dispatch('action:status', ':logout');
                 xf.dispatch('action:auth', ':password:login');
                 return {strava: false, intervals: false, trainingPeaks: false};
@@ -336,10 +458,31 @@ function Auth(args = {}) {
         }
     }
 
+    function readAuthSecrets(href) {
+        const url = new URL(href);
+        const hashText = url.hash.startsWith('#') ? url.hash.slice(1) : '';
+        const hashParams = hashText.includes('=')
+            ? new URLSearchParams(hashText)
+            : new URLSearchParams();
+
+        const token = url.searchParams.get('token') || hashParams.get('token') || '';
+        const verify = url.searchParams.get('verify') || hashParams.get('verify') || '';
+
+        return {
+            token,
+            verify,
+            clear: token !== '' || verify !== '',
+            pathname: url.pathname,
+        };
+    }
+
     return Object.freeze({
         register,
         login,
+        verifyEmail,
+        holdResetToken,
         logout,
+        deleteAccount,
         forgot,
         reset,
         status,
@@ -348,6 +491,8 @@ function Auth(args = {}) {
         resetTurnstile,
         isTurnstileExpired,
         removeTurnstile,
+
+        readAuthSecrets,
     });
 }
 

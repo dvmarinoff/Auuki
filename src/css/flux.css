@@ -2365,7 +2365,9 @@ battery-level {
 
 /* User Auth */
 
-#forgot--msg {
+#forgot--msg,
+#register--msg,
+#login--msg {
     font-size: 1.4em;
     padding: 1em;
 
@@ -2378,6 +2380,11 @@ battery-level {
     &.fail {
         color: var(--zone-red)
     }
+}
+#register--msg:empty,
+#login--msg:empty {
+    display: none;
+    padding: 0;
 }
 
 .auth, .profile {
@@ -2501,6 +2508,86 @@ battery-level {
 }
 #profile.active {
     display: block;
+}
+#account--management--cont .list--row--inner {
+    display: flex;
+    justify-content: space-between;
+    max-width: var(--inner-max-width-fixed);
+    margin: 0 auto;
+}
+#account--badge {
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 5rem;
+    height: 5rem;
+    margin: 1rem auto 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--white);
+    background-color: var(--zone-gray);
+    border: 1px solid var(--zone-gray);
+    border-radius: 50%;
+}
+#account--identifier {
+    font-size: 1.2em;
+}
+#account--delete--button {
+    color: #fff;
+    background-color: var(--red);
+    border-color: var(--red);
+}
+#account--delete--button:hover {
+    background-color: var(--zone-red);
+}
+
+#dialog--delete-account {
+    width: 30rem;
+    max-width: 90%;
+    padding: 1rem;
+
+    color: var(--foreground-color);
+    background-color: var(--background-color-2);
+    border: 1px solid var(--border-color);
+
+    p {
+        font-size: 1.4em;
+        line-height: 1.4em;
+        margin: 1em auto;
+    }
+
+    #account--delete--password {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #account--delete--msg:empty {
+        display: none;
+    }
+
+    #account--delete--form--actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    button {
+        color: var(--foreground-color);
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    #account--delete--confirm {
+        color: #fff;
+        background-color: var(--red);
+        border-color: var(--red);
+    }
+
+    #account--delete--confirm:hover {
+        background-color: var(--zone-red);
+    }
 }
 
 @media (prefers-color-scheme: light) {
@@ -2676,10 +2763,6 @@ activity-item {
         background-color: var(--background-color-2);
     }
 
-    .tp-logo--icon {
-        background-color: var(--gray);
-        cursor: not-allowed;
-    }
     .action--image {
         cursor: not-allowed;
 
@@ -2709,7 +2792,8 @@ activity-item {
     display: none;
     display: grid;
     grid-template-columns: 40% 1fr 1fr 1fr 1fr;
-    /* grid-template-columns: 8rem 8rem 1fr 1fr 8rem 4rem; */
+    /* Uncomment when Training Peaks integration is on */
+    /* grid-template-columns: 40% 1fr 1fr 1fr 1fr 1fr; */
     align-items: center;
     line-height: 4em;
     height: 4em;

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta name="referrer" content="origin">
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#35363a" />
@@ -561,13 +562,15 @@
                                         </svg>
                                         <div class="connection-icon-switch--indicator none intervals"></div>
                                     </view-action>
-                                    <!-- <view-action
-                                         class="activity--action"
-                                         action="trainingPeaks::wod"
-                                         topic="planned">
-                                         <div class="tp-logo--icon">TP</div>
-                                         <div class="connection-icon-switch--indicator none tp"></div>
-                                         </view-action> -->
+                                    <!--
+                                    <view-action
+                                        class="activity--action"
+                                        action=":trainingPeaks:wod"
+                                        topic=":planned">
+                                        <div class="tp-logo--icon">TP</div>
+                                        <div class="connection-icon-switch--indicator none tp"></div>
+                                    -->
+                                    </view-action>
                                 </div> <!-- end planned--actions -->
                             </div> <!-- end list--heading--cont -->
                         </div>
@@ -676,6 +679,7 @@
                                             name="password"
                                             type="password"
                                             pattern=".{8,64}"
+                                            maxlength="64"
                                             title="8 characters minimum"
                                             placeholder="Password"
                                             value=""
@@ -687,6 +691,7 @@
                                             class="input"
                                             name="password_confirmation"
                                             pattern=".{8,64}"
+                                            maxlength="64"
                                             title="8 characters minimum"
                                             placeholder="Confirm Password"
                                             type="password"
@@ -707,6 +712,7 @@
                                                     index="1">Login instead</div>
                                         </view-action>
                                     </div>
+                                    <div id="register--msg"></div>
                                 </form>
                                 <form id="login--form" class="login--form active">
                                     <h2 class="form--header">Login</h2>
@@ -726,6 +732,7 @@
                                             name="password"
                                             type="Password"
                                             pattern=".{8,64}"
+                                            maxlength="64"
                                             title="8 characters minimum"
                                             placeholder="Password"
                                             value=""
@@ -744,6 +751,7 @@
                                             <div class="tab--button">Forgot</div>
                                         </view-action>
                                     </div>
+                                    <div id="login--msg"></div>
                                 </form>
                                 <form id="forgot--form" class="forgot--form">
                                     <h2 class="form--header">Forgot</h2>
@@ -775,6 +783,7 @@
                                             name="password"
                                             type="password"
                                             pattern=".{8,64}"
+                                            maxlength="64"
                                             title="8 characters minimum"
                                             placeholder="Password"
                                             value=""
@@ -786,6 +795,7 @@
                                             class="input"
                                             name="password_confirmation"
                                             pattern=".{8,64}"
+                                            maxlength="64"
                                             title="8 characters minimum"
                                             placeholder="Confirm Password"
                                             type="password"
@@ -816,12 +826,31 @@
 
                     <!-- profile -->
                     <div id="profile" class="profile">
-                        <div>
-                            <button id="logout--button"
-                                    class="btn"
-                                    type="button">Logout</button>
+                        <dialog id="dialog--delete-account" class="dialog">
+                            <form id="account--delete--form">
+                                <p>Delete your account? This cannot be undone.</p>
+                                <input id="account--delete--password"
+                                       class="input"
+                                       type="password"
+                                       autocomplete="current-password"
+                                       placeholder="Current password">
+                                <div id="account--delete--msg" class="error"></div>
+                                <div id="account--delete--form--actions">
+                                    <button type="submit"
+                                            class="btn"
+                                            id="account--delete--confirm">Delete</button>
+                                    <button type="button"
+                                            id="account--delete--cancel">Cancel</button>
+                                </div>
+                            </form>
+                        </dialog>
+                        <account-badge>
+                            <div>
+                                <div id="account--badge"></div>
+                                <div id="account--identifier"></div>
+                            </div>
+                        </account-badge>
 
-                        </div>
                         <div class="list--sub-section app-connections">
                             <o-auth>
                                 <div class="list--row--outer">
@@ -892,6 +921,25 @@
                                 </div>
                             </o-auth>
                         </div> <!-- end connections -->
+
+                        <div id="account--management--cont">
+                            <div class="list--row--outer">
+                                <div class="list--row--inner list--heading--cont">
+                                    <h2 class="list--sub-heading">Account</h2>
+                                </div>
+                            </div>
+                            <div class="list--row--outer">
+                                <div class="list--row--inner">
+                                    <button id="account--delete--button"
+                                            class="btn"
+                                            type="button">Delete Account</button>
+                                    <button id="account--logout--button"
+                                            class="btn"
+                                            type="button">Logout</button>
+                                </div>
+                            </div>
+                        </div> <!-- end account-management -->
+
                     </div> <!-- end profile -->
 
                 </div> <!-- end profile--sub-tab -->

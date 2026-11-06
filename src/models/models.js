@@ -2,7 +2,7 @@ import { xf, exists, existance, empty, equals, mavg, avg, max,
          first, second, last, clamp, toFixed, isArray,
          isString, isObject } from '../functions.js';
 
-import { inRange, dateToDashString, getStartEndOfWeek, isToday, timeDiff, pad } from '../utils.js';
+import { inRange, dateToDashString, getStartEndOfWeek, isoDate, isToday, timeDiff, pad } from '../utils.js';
 
 import { LocalStorageItem } from '../storage/local-storage.js';
 import { idb } from '../storage/idb.js';
@@ -710,6 +710,17 @@ class Workout extends Model {
     fromIntervalsResponse(response) {
         return response.map(this.fromIntervalsEvent.bind(this));
     }
+    fromTrainingPeaksEvent(event) {
+        const workout = this.parse(atob(event.workout_file_base64));
+        workout.meta.planned = true;
+        workout.meta.startDateLocal = event.start_date_local;
+        workout.id = uuid();
+        workout.training_peaks_id = event.id;
+        return workout;
+    }
+    fromTrainingPeaksResponse(response) {
+        return response.map(this.fromTrainingPeaksEvent.bind(this));
+    }
     async readFromFile(file) {
         const result = await fileHandler.read(file);
         return {result, name: file.name};
@@ -881,6 +892,29 @@ class Planned {
             const { startOfWeek, endOfWeek } = getStartEndOfWeek(new Date(), true);
             const response = await api.intervals.wod(startOfWeek, endOfWeek);
             const workouts = self.workoutModel.fromIntervalsResponse(response);
+
+            this.setWorkouts(workouts);
+            this.setModified(service);
+            this.backup();
+
+            if(!this.isEmpty()) {
+                for(let workout of this.data.workouts) {
+                    if(isToday(workout.meta.startDateLocal)) {
+                        const id = workout.id;
+                        xf.dispatch(`action:li:${id}`, ':select');
+                        break;
+                    }
+                }
+            }
+        }
+        if(service === 'trainingPeaks') {
+            // TrainingPeaks reads the calendar from the athlete's local today forward.
+            const today = isoDate();
+            const { startOfWeek, endOfWeek } = getStartEndOfWeek(new Date(), true);
+            const oldest = today > startOfWeek ? today : startOfWeek;
+            const newest = oldest > endOfWeek ? oldest : endOfWeek;
+            const response = await api.trainingPeaks.wod(oldest, newest);
+            const workouts = self.workoutModel.fromTrainingPeaksResponse(response);
 
             this.setWorkouts(workouts);
             this.setModified(service);

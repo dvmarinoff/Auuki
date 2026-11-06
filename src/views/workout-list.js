@@ -1,4 +1,4 @@
-import { xf, exists, empty, equals, debounce } from '../functions.js';
+import { xf, exists, empty, equals, debounce, escapeHtml } from '../functions.js';
 import { models } from '../models/models.js';
 import { intervalsToGraph, courseToGraph, renderInfo } from './workout-graph.js';
 
@@ -25,21 +25,25 @@ function workoutTemplate(workout) {
     if(workout.meta.distance) {
         duration = `${(workout.meta.distance / 1000).toFixed(2)} km`;
     }
-    return `<workout-item class='workout cf' id="${workout.id}" metric="ftp">
+    const id = escapeHtml(workout.id);
+    const name = escapeHtml(workout.meta.name);
+    const category = escapeHtml(workout.meta.category);
+    const description = escapeHtml(workout.meta.description);
+    return `<workout-item class='workout cf' id="${id}" metric="ftp">
                 <div class="workout--info">
                     <div class="workout--short-info">
                         <div class="workout--summary">
-                            <div class="workout--name">${workout.meta.name}</div>
-                            <div class="workout--type">${workout.meta.category}</div>
+                            <div class="workout--name">${name}</div>
+                            <div class="workout--type">${category}</div>
                             <div class="workout--duration">${duration}</div>
-                            <div class="workout--select" id="btn${workout.id}">${workout.selected ? radioOn : radioOff}
+                            <div class="workout--select" id="btn${id}">${workout.selected ? radioOn : radioOff}
                             </div>
                             <div class="workout--options">${options}</div>
                         </div>
                     </div>
                     <div class="workout--full-info">
                         <div class="workout-list--graph-cont">${workout.graph}</div>
-                        <div class="workout--description">${workout.meta.description}</div>
+                        <div class="workout--description">${description}</div>
                     </div>
                 </div>
                 <div class="workout--actions">

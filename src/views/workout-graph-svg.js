@@ -1,4 +1,4 @@
-import { xf, exists, first, last, } from '../functions.js';
+import { xf, exists, first, last, escapeHtml, } from '../functions.js';
 import { formatTime } from '../utils.js';
 import { listItemTemplate, } from './planned-list.js';
 import { models } from '../models/models.js';
@@ -155,10 +155,10 @@ class WorkoutGraphViewModel {
 
             acc += `<polygon points="${points}"
                              fill="${color}"
-                             power="${info.power}"
-                             cadence="${info.cadence}"
-                             slope="${info.slope}"
-                             duration="${info.duration}" />`;
+                             power="${escapeHtml(info.power)}"
+                             cadence="${escapeHtml(info.cadence)}"
+                             slope="${escapeHtml(info.slope)}"
+                             duration="${escapeHtml(info.duration)}" />`;
         }
 
         return `
@@ -221,7 +221,7 @@ class WorkoutGraph extends HTMLElement {
         const bottom       = rect.height;
 
         this.$info.style.display = 'block';
-        this.$info.innerHTML = `<div>${power}</div><div>${cadence}</div><div>${slope}</div><div class="graph--info--time">${duration}</div>`;
+        this.$info.innerHTML = `<div>${escapeHtml(power)}</div><div>${escapeHtml(cadence)}</div><div>${escapeHtml(slope)}</div><div class="graph--info--time">${escapeHtml(duration)}</div>`;
 
         const width  = this.$info.getBoundingClientRect().width;
         const height = this.$info.getBoundingClientRect().height;
