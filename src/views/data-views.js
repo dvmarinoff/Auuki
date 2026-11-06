@@ -1502,7 +1502,7 @@ class OAuth extends HTMLElement {
         const self = this;
         this.abortController = new AbortController();
         this.signal = { signal: self.abortController.signal };
-        this.services = {strava: false, intervals: false};
+        this.services = {strava: false, intervals: false, trainingPeaks: false};
 
         this.$stravaButton = self.querySelector('#strava--connect--button');
         this.$intervalsButton = self.querySelector('#intervals--connect--button');
@@ -1545,7 +1545,7 @@ class OAuth extends HTMLElement {
             this.$intervalsButton.textContent = services.intervals ? 'Disconnect' : 'Connect';
         }
         if(exists(this.$tpButton)) {
-            this.$tpButton.textContent = services.tp ? 'Disconnect' : 'Connect';
+            this.$tpButton.textContent = services.trainingPeaks ? 'Disconnect' : 'Connect';
         }
     }
 }

@@ -2763,10 +2763,6 @@ activity-item {
         background-color: var(--background-color-2);
     }
 
-    .tp-logo--icon {
-        background-color: var(--gray);
-        cursor: not-allowed;
-    }
     .action--image {
         cursor: not-allowed;
 
@@ -2796,7 +2792,8 @@ activity-item {
     display: none;
     display: grid;
     grid-template-columns: 40% 1fr 1fr 1fr 1fr;
-    /* grid-template-columns: 8rem 8rem 1fr 1fr 8rem 4rem; */
+    /* Uncomment when Training Peaks integration is on */
+    /* grid-template-columns: 40% 1fr 1fr 1fr 1fr 1fr; */
     align-items: center;
     line-height: 4em;
     height: 4em;

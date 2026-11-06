@@ -1,4 +1,4 @@
-import { xf, empty, escapeHtml, } from '../functions.js';
+import { xf, escapeHtml, } from '../functions.js';
 import { isoDate, isoDateToWeekDay } from '../utils.js';
 import { models } from '../models/models.js';
 import { WorkoutGraphViewModel, } from './workout-graph-svg.js';
@@ -70,6 +70,7 @@ class PlannedList extends HTMLElement {
 
         if(action === ':trainingPeaks:wod') {
             this.model.wod('trainingPeaks');
+            this.onLoading(this.$indicatorTrainingPeaks);
             return;
         }
         if(action === ':trainingPeaks:wod:success') {
@@ -154,7 +155,7 @@ class PlannedList extends HTMLElement {
             self.size = self.getSize();
         };
 
-        if(empty(models.planned.data)) {
+        if(this.model.isEmpty()) {
             self.innerHTML = self.toEmpty();
         } else {
             self.innerHTML = self.toList();

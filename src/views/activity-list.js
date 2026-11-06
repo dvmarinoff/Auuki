@@ -62,6 +62,7 @@ class ActivityList extends HTMLElement {
         const name = escapeHtml(this.name(data));
         const intervalsStatus = escapeHtml(status.intervals ?? 'none');
         const stravaStatus = escapeHtml(status.strava ?? 'none');
+        const trainingPeaksStatus = escapeHtml(status.trainingPeaks ?? 'none');
 
         return `
             <activity-item id="i${i}--activity--item" class="some" data-id="${id}">
@@ -115,6 +116,15 @@ class ActivityList extends HTMLElement {
                                         </svg>
                                         <div class="connection-icon-switch--indicator ${stravaStatus} strava"></div>
                                     </view-action>
+                                    <!--
+                                    <view-action
+                                        class="activity--action"
+                                        action=":trainingPeaks:upload"
+                                        topic=":activity:${id}">
+                                        <div class="tp-logo--icon">TP</div>
+                                        <div class="connection-icon-switch--indicator ${trainingPeaksStatus} tp"></div>
+                                    -->
+                                    </view-action>
                                     <view-action
                                         class="activity--action action--download"
                                         action=":download"
@@ -145,15 +155,6 @@ class ActivityList extends HTMLElement {
         `;
     }
 }
-
-                                    // <view-action
-                                    //     class="activity--action"
-                                    //     action=":tp:upload"
-                                    //     topic=":activity:${this.id(data)}">
-                                    //     <div class="tp-logo--icon">TP</div>
-                                    //     <div class="connection-icon-switch--indicator ${status.tp ?? 'none'} tp"></div>
-                                    // </view-action>
-
 
 customElements.define('activity-list', ActivityList);
 
@@ -209,7 +210,7 @@ class ActivityItem extends HTMLElement {
             this.onLoading(this.$indicatorIntervals);
             return;
         }
-        if(action === ':tp:upload') {
+        if(action === ':trainingPeaks:upload') {
             models.activity.upload('trainingPeaks', this.id);
             this.onLoading(this.$indicatorTP);
             return;
@@ -227,10 +228,10 @@ class ActivityItem extends HTMLElement {
         if(action === ':intervals:upload:fail') {
             this.onFail(this.$indicatorIntervals);
         }
-        if(action === ':tp:upload:success') {
+        if(action === ':trainingPeaks:upload:success') {
             this.onSuccess(this.$indicatorTP);
         }
-        if(action === ':tp:upload:fail') {
+        if(action === ':trainingPeaks:upload:fail') {
             this.onFail(this.$indicatorTP);
         }
     }
