@@ -197,6 +197,18 @@ class AuthForms extends HTMLElement {
             this.$loginMsg.classList.add('fail');
             return;
         }
+        if(equals(action, ':password:policy')) {
+            this.showActiveFormNote('Use 8 to 64 characters.');
+            return;
+        }
+        if(equals(action, ':email:invalid')) {
+            this.showActiveFormNote('Enter a valid email address.');
+            return;
+        }
+        if(equals(action, ':too-many-attempts')) {
+            this.showActiveFormNote('Too many attempts. Wait a few minutes and try again.');
+            return;
+        }
         if(action === ':error') {
             this.$loginMsg.textContent = '';
             this.$registerMsg.textContent = '';
@@ -226,6 +238,29 @@ class AuthForms extends HTMLElement {
         if(target) {
             elements[target].classList.add('active');
         }
+    }
+    showActiveFormNote(text) {
+        const forms = this.el.password;
+        if(forms.$register.classList.contains('active')) {
+            this.$registerMsg.textContent = text;
+            this.$registerMsg.classList.remove('success');
+            this.$registerMsg.classList.add('fail');
+            return;
+        }
+        if(forms.$forgot.classList.contains('active')) {
+            this.$forgotMsg.textContent = text;
+            this.$forgotMsg.classList.remove('success');
+            this.$forgotMsg.classList.remove('loading');
+            this.$forgotMsg.classList.add('error');
+            return;
+        }
+        if(forms.$login.classList.contains('active')) {
+            this.$loginMsg.textContent = text;
+            this.$loginMsg.classList.remove('success');
+            this.$loginMsg.classList.add('fail');
+            return;
+        }
+        this.error(text);
     }
     clearLoginNotice() {
         this.$loginMsg.textContent = '';

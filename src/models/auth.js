@@ -6,6 +6,20 @@ import strava from './strava.js';
 import intervals from './intervals.js';
 import trainingPeaks from './training-peaks.js';
 
+function authFailureAction(json, fallback = ':error') {
+    const message = json?.error?.message;
+    if(equals(message, 'PASSWORD_POLICY')) {
+        return ':password:policy';
+    }
+    if(equals(message, 'EMAIL_INVALID')) {
+        return ':email:invalid';
+    }
+    if(equals(message, 'TOO_MANY_ATTEMPTS')) {
+        return ':too-many-attempts';
+    }
+    return fallback;
+}
+
 function Auth(args = {}) {
     const api_uri = config.get().API_URI;
     const pwa_uri = config.get().PWA_URI;
@@ -105,7 +119,7 @@ function Auth(args = {}) {
 
             if(json.error) {
                 console.log(':api :register :error');
-                xf.dispatch('action:auth', ':error');
+                xf.dispatch('action:auth', authFailureAction(json));
                 return;
             }
             if(json?.result?.success) {
@@ -149,7 +163,7 @@ function Auth(args = {}) {
                     return;
                 }
                 console.log(`:api :login :error`);
-                xf.dispatch('action:auth', ':error');
+                xf.dispatch('action:auth', authFailureAction(json));
                 return;
             }
 
@@ -307,7 +321,8 @@ function Auth(args = {}) {
                 xf.dispatch('action:auth', ':forgot:success');
             } else {
                 console.log(`:api :forgot :fail :with ${response.status}`);
-                xf.dispatch('action:auth', ':forgot:fail');
+                const json = await response.json().catch(() => ({}));
+                xf.dispatch('action:auth', authFailureAction(json, ':forgot:fail'));
             }
         } catch(error) {
             console.log(`:api :forgot :fail`);
@@ -346,7 +361,8 @@ function Auth(args = {}) {
                 xf.dispatch('action:auth', ':password:login');
             } else {
                 console.error(`:api :reset :fail`);
-                xf.dispatch('action:auth', ':error');
+                const json = await response.json().catch(() => ({}));
+                xf.dispatch('action:auth', authFailureAction(json));
             }
         } catch(e) {
             console.error(`:api :reset :error `, e);
