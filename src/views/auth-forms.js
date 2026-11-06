@@ -43,6 +43,11 @@ class AuthForms extends HTMLElement {
             // },
             $logout: document.querySelector('#account--logout--button'),
             $deleteAccount: document.querySelector('#account--delete--button'),
+            $deleteDialog: document.querySelector('#dialog--delete-account'),
+            $deleteForm: document.querySelector('#account--delete--form'),
+            $deletePassword: document.querySelector('#account--delete--password'),
+            $deleteMsg: document.querySelector('#account--delete--msg'),
+            $deleteCancel: document.querySelector('#account--delete--cancel'),
             $error: document.querySelector('#auth-error--section'),
             $pwds: document.querySelectorAll('input[type="password"]'),
         };
@@ -57,10 +62,23 @@ class AuthForms extends HTMLElement {
         });
 
         this.el.$deleteAccount.addEventListener('pointerup', () => {
-            const proceed = confirm('Delete your account? This cannot be undone.');
-            if(proceed) {
-                models.api.auth.deleteAccount();
+            this.openDeleteDialog();
+        });
+        this.el.$deleteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = this.el.$deletePassword.value;
+            if(equals(password, '')) {
+                this.el.$deleteMsg.textContent = 'Enter your current password.';
+                return;
             }
+            this.el.$deleteMsg.textContent = '';
+            models.api.auth.deleteAccount(password);
+        });
+        this.el.$deleteCancel.addEventListener('pointerup', () => {
+            this.closeDeleteDialog();
+        });
+        this.el.$deleteDialog.addEventListener('close', () => {
+            this.clearDeleteSecret();
         });
 
         this.$forgotMsg = document.querySelector('#forgot--msg');
@@ -209,7 +227,22 @@ class AuthForms extends HTMLElement {
             this.showActiveFormNote('Too many attempts. Wait a few minutes and try again.');
             return;
         }
+        if(equals(action, ':password:delete-mismatch')) {
+            this.clearDeletePassword();
+            this.el.$deleteMsg.textContent = 'That password does not match.';
+            return;
+        }
+        if(equals(action, ':password:delete-limited')) {
+            this.clearDeletePassword();
+            this.el.$deleteMsg.textContent = 'Too many attempts. Wait a few minutes and try again.';
+            return;
+        }
+        if(equals(action, ':password:deleted')) {
+            this.closeDeleteDialog();
+            return;
+        }
         if(action === ':error') {
+            this.closeDeleteDialog();
             this.$loginMsg.textContent = '';
             this.$registerMsg.textContent = '';
             this.error('Wrong credentials or Authentication error');
@@ -266,6 +299,27 @@ class AuthForms extends HTMLElement {
         this.$loginMsg.textContent = '';
         this.$loginMsg.classList.remove('success');
         this.$loginMsg.classList.remove('fail');
+    }
+    openDeleteDialog() {
+        this.clearDeleteSecret();
+        const dialog = this.el.$deleteDialog;
+        if(!dialog.open) {
+            dialog.showModal();
+        }
+    }
+    closeDeleteDialog() {
+        this.clearDeleteSecret();
+        const dialog = this.el.$deleteDialog;
+        if(dialog.open && typeof dialog.close === 'function') {
+            dialog.close();
+        }
+    }
+    clearDeletePassword() {
+        this.el.$deletePassword.value = '';
+    }
+    clearDeleteSecret() {
+        this.clearDeletePassword();
+        this.el.$deleteMsg.textContent = '';
     }
     error(msg = '') {
         if(msg !== '') {

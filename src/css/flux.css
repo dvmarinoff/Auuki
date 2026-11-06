@@ -2542,6 +2542,54 @@ battery-level {
     background-color: var(--zone-red);
 }
 
+#dialog--delete-account {
+    width: 30rem;
+    max-width: 90%;
+    padding: 1rem;
+
+    color: var(--foreground-color);
+    background-color: var(--background-color-2);
+    border: 1px solid var(--border-color);
+
+    p {
+        font-size: 1.4em;
+        line-height: 1.4em;
+        margin: 1em auto;
+    }
+
+    #account--delete--password {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #account--delete--msg:empty {
+        display: none;
+    }
+
+    #account--delete--form--actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    button {
+        color: var(--foreground-color);
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    #account--delete--confirm {
+        color: #fff;
+        background-color: var(--red);
+        border-color: var(--red);
+    }
+
+    #account--delete--confirm:hover {
+        background-color: var(--zone-red);
+    }
+}
+
 @media (prefers-color-scheme: light) {
     body.auto-theme {
         .auth, .profile {

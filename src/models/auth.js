@@ -27,6 +27,7 @@ function Auth(args = {}) {
 
     let _loggedIn = false;
     let _hasApi = true;
+    let _resetToken = '';
 
     let _turnstileLoaded = false;
     let _turnstileId;
@@ -180,7 +181,11 @@ function Auth(args = {}) {
         }
     }
 
-    async function deleteAccount() {
+    function holdResetToken(token) {
+        _resetToken = token;
+    }
+
+    async function deleteAccount(password) {
         const url = `${api_uri}/api/account/delete`;
 
         try {
@@ -188,11 +193,21 @@ function Auth(args = {}) {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json',},
                 credentials: 'include',
-                body: JSON.stringify({delete: true}),
+                body: JSON.stringify({delete: true, password}),
             });
 
             if(!response.ok) {
                 console.log(`:api :delete-account :fail :with ${response.status}`);
+                const json = await response.json().catch(() => ({}));
+                const message = json?.error?.message;
+                if(equals(message, 'DELETE_PASSWORD')) {
+                    xf.dispatch('action:auth', ':password:delete-mismatch');
+                    return;
+                }
+                if(equals(message, 'TOO_MANY_ATTEMPTS')) {
+                    xf.dispatch('action:auth', ':password:delete-limited');
+                    return;
+                }
                 xf.dispatch('action:auth', ':error');
                 return;
             }
@@ -205,6 +220,7 @@ function Auth(args = {}) {
             }
 
             console.log(`:api :delete-account :success`);
+            xf.dispatch('action:auth', ':password:deleted');
             xf.dispatch('account', {identifier: ''});
             xf.dispatch('action:auth', ':password:logout');
 
@@ -269,7 +285,6 @@ function Auth(args = {}) {
         }
     }
 
-    // The confirmation secret arrives from the address bar. It is not written to the console.
     async function verifyEmail(rawToken) {
         const url = `${api_uri}/api/verify-email`;
 
@@ -333,8 +348,7 @@ function Auth(args = {}) {
 
     // {data: {FormData}} -> Void
     async function reset(args = {}) {
-        const params = (new URL(document.location)).searchParams;
-        const token = params.get('token') ?? '';
+        const token = _resetToken;
 
         const url = `${api_uri}/api/reset-password`;
 
@@ -357,7 +371,7 @@ function Auth(args = {}) {
 
             if(response.ok) {
                 console.log(`:api :reset :success`);
-                window.history.pushState({}, document.title, window.location.pathname);
+                _resetToken = '';
                 xf.dispatch('action:auth', ':password:login');
             } else {
                 console.error(`:api :reset :fail`);
@@ -394,8 +408,6 @@ function Auth(args = {}) {
                 if(_turnstileLoaded) {
                     removeTurnstile();
                 }
-
-                console.log(`:status`, body.result);
 
                 config.setServices(body.result.services);
                 strava.update();
@@ -446,10 +458,29 @@ function Auth(args = {}) {
         }
     }
 
+    function readAuthSecrets(href) {
+        const url = new URL(href);
+        const hashText = url.hash.startsWith('#') ? url.hash.slice(1) : '';
+        const hashParams = hashText.includes('=')
+            ? new URLSearchParams(hashText)
+            : new URLSearchParams();
+
+        const token = url.searchParams.get('token') || hashParams.get('token') || '';
+        const verify = url.searchParams.get('verify') || hashParams.get('verify') || '';
+
+        return {
+            token,
+            verify,
+            clear: token !== '' || verify !== '',
+            pathname: url.pathname,
+        };
+    }
+
     return Object.freeze({
         register,
         login,
         verifyEmail,
+        holdResetToken,
         logout,
         deleteAccount,
         forgot,
@@ -460,6 +491,8 @@ function Auth(args = {}) {
         resetTurnstile,
         isTurnstileExpired,
         removeTurnstile,
+
+        readAuthSecrets,
     });
 }
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta name="referrer" content="origin">
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#35363a" />
@@ -823,6 +824,24 @@
 
                     <!-- profile -->
                     <div id="profile" class="profile">
+                        <dialog id="dialog--delete-account" class="dialog">
+                            <form id="account--delete--form">
+                                <p>Delete your account? This cannot be undone.</p>
+                                <input id="account--delete--password"
+                                       class="input"
+                                       type="password"
+                                       autocomplete="current-password"
+                                       placeholder="Current password">
+                                <div id="account--delete--msg" class="error"></div>
+                                <div id="account--delete--form--actions">
+                                    <button type="submit"
+                                            class="btn"
+                                            id="account--delete--confirm">Delete</button>
+                                    <button type="button"
+                                            id="account--delete--cancel">Cancel</button>
+                                </div>
+                            </form>
+                        </dialog>
                         <account-badge>
                             <div>
                                 <div id="account--badge"></div>
