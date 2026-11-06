@@ -1,4 +1,4 @@
-import { xf, empty, } from '../functions.js';
+import { xf, empty, escapeHtml, } from '../functions.js';
 import { isoDate, isoDateToWeekDay } from '../utils.js';
 import { models } from '../models/models.js';
 import { WorkoutGraphViewModel, } from './workout-graph-svg.js';
@@ -98,14 +98,14 @@ class PlannedList extends HTMLElement {
     toListItem(workout, ftp, size) {
         const self = this;
 
-        const id = workout.id;
+        const id = escapeHtml(workout.id);
         const weekDay = isoDateToWeekDay(workout.meta.startDateLocal ?? isoDate());
         const weekDayTemplate = `
             <div class="weekday">${weekDay.weekDay}</div>
             <div class="date">${`${weekDay.day}`.padStart(2, "0")}</div>`;
-        const name = workout.meta.name;
-        const category = workout.meta.category;
-        const description = workout.meta.description;
+        const name = escapeHtml(workout.meta.name);
+        const category = escapeHtml(workout.meta.category);
+        const description = escapeHtml(workout.meta.description);
 
         let duration = '';
         if(workout.meta.duration) {

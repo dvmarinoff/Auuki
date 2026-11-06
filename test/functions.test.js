@@ -53,6 +53,7 @@ import {
     toNumber,
     toFixed,
     toBool,
+    escapeHtml,
     dataviewToArray,
     dataviewToString,
     stringToCharCodes,
@@ -596,6 +597,30 @@ describe('xor', () => {
         let dataview = new DataView(uint8.buffer);
 
         expect(xor(dataview)).toBe(81);
+    });
+});
+
+describe('escapeHtml', () => {
+    test('keeps a normal workout name', () => {
+        expect(escapeHtml('Dijon')).toBe('Dijon');
+    });
+
+    test('turns tags and quotes into text', () => {
+        expect(escapeHtml(`<img src=x onerror="alert(1)">`))
+            .toBe('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
+    });
+
+    test('escapes an ampersand before the other characters', () => {
+        expect(escapeHtml(`Tom & Jerry`)).toBe('Tom &amp; Jerry');
+    });
+
+    test('turns a missing value into an empty string', () => {
+        expect(escapeHtml(null)).toBe('');
+        expect(escapeHtml(undefined)).toBe('');
+    });
+
+    test('turns a number into digits', () => {
+        expect(escapeHtml(90)).toBe('90');
     });
 });
 

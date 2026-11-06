@@ -1,4 +1,4 @@
-import { exists, xf, print, } from '../functions.js';
+import { exists, equals, xf, print, } from '../functions.js';
 import { OAuthService, DialogMsg, stateParam, } from './enums.js';
 import { uuid } from '../storage/uuid.js';
 import config from './config.js';
@@ -81,19 +81,25 @@ function Router(args = {}) {
         // switch
         if(error) {
             console.error(`:api :param :error `, error);
+            clearParams();
             return true;
         }
-        if(!error && (code || scope || state)) {
-            const { service, id } = stateParam.decode(state);
-            console.log(`:api :onQueryParams service: ${service} id: ${id}`);
+        if(code || scope || state) {
+            if(!stateParam.consume(state)) {
+                console.error(`:api :param :state`);
+                clearParams();
+                return true;
+            }
+            const { service } = stateParam.decode(state);
+            console.log(`:api :onQueryParams service: ${service}`);
 
-            if(service === OAuthService.strava) {
+            if(equals(service, OAuthService.strava)) {
                 await strava.paramsHandler({state, code, scope});
             }
-            if(service === OAuthService.intervals) {
+            if(equals(service, OAuthService.intervals)) {
                 await intervals.paramsHandler({state, code, scope});
             }
-            if(service === OAuthService.trainingPeaks) {
+            if(equals(service, OAuthService.trainingPeaks)) {
                 await trainingPeaks.paramsHandler({state, code, scope});
             }
             return true;
