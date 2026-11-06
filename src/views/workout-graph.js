@@ -1,4 +1,4 @@
-import { xf, exists, existance, equals, clamp, debounce, toFixed  } from '../functions.js';
+import { xf, exists, existance, equals, clamp, debounce, toFixed, escapeHtml } from '../functions.js';
 import { formatTime, translate } from '../utils.js';
 import { models } from '../models/models.js';
 import { g } from './graph.js';
@@ -44,10 +44,10 @@ function Interval(acc, interval, width, ftp, powerMax, viewPort) {
         const zone     = (models.ftp.powerToZone(power, ftp)).name;
         const infoTime = formatTime({value: duration, format: 'mm:ss'});
 
-        const powerAttr    = exists(power)    ? `power="${power}"` : '';
-        const cadenceAttr  = exists(cadence)  ? `cadence="${cadence}"` : '';
-        const slopeAttr    = exists(slope)    ? `slope="${slope}"` : '';
-        const durationAttr = exists(duration) ? `duration="${infoTime}"` : '';
+        const powerAttr    = exists(power)    ? `power="${escapeHtml(power)}"` : '';
+        const cadenceAttr  = exists(cadence)  ? `cadence="${escapeHtml(cadence)}"` : '';
+        const slopeAttr    = exists(slope)    ? `slope="${escapeHtml(slope)}"` : '';
+        const durationAttr = exists(duration) ? `duration="${escapeHtml(infoTime)}"` : '';
 
         return a +
             `<div class="graph--bar zone-${zone}" style="height: ${height}px; width: ${width}%" ${powerAttr} ${cadenceAttr} ${slopeAttr} ${durationAttr}></div>`;
@@ -87,7 +87,7 @@ function renderInfo(args = {}) {
     const bottom       = args.intervalRect.height;
 
     dom.info.style.display = 'block';
-    dom.info.innerHTML = `<div>${power}</div><div>${cadence}</div><div>${slope}</div><div class="graph--info--time">${duration}</div>`;
+    dom.info.innerHTML = `<div>${escapeHtml(power)}</div><div>${escapeHtml(cadence)}</div><div>${escapeHtml(slope)}</div><div class="graph--info--time">${escapeHtml(duration)}</div>`;
 
     const width  = dom.info.getBoundingClientRect().width;
     const height = dom.info.getBoundingClientRect().height;
@@ -346,7 +346,8 @@ function courseToGraph(course, viewPort) {
         const x4 = px2;
         const y4 = yMax;
 
-        return acc + `<polygon points="${x1},${y1} ${x2},${y2} ${x3},${y3} ${x4},${y4}" stroke="none" fill="${color}" class="graph--bar" index="${i}" slope="${p.slope}" />`;
+        const slopeAttr = exists(p.slope) ? `slope="${escapeHtml(p.slope)}"` : '';
+        return acc + `<polygon points="${x1},${y1} ${x2},${y2} ${x3},${y3} ${x4},${y4}" stroke="none" fill="${color}" class="graph--bar" index="${i}" ${slopeAttr} />`;
 
     }, ``);
 

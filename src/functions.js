@@ -200,6 +200,16 @@ function capitalize(str) {
     return str.trim().replace(/^\w/, (c) => c.toUpperCase());
 }
 
+function escapeHtml(value) {
+    const text = exists(value) ? String(value) : '';
+    return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
 function clamp(lower, upper, value) {
     if(value >= upper) {
         return upper;
@@ -740,6 +750,7 @@ export {
     sum,
     rand,
     capitalize,
+    escapeHtml,
     clamp,
 
     // functions

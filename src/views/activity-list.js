@@ -1,4 +1,4 @@
-import { xf, formatDate, } from '../functions.js';
+import { xf, formatDate, escapeHtml, } from '../functions.js';
 import { models } from '../models/models.js';
 import { formatTime, } from '../utils.js';
 
@@ -58,18 +58,23 @@ class ActivityList extends HTMLElement {
     }
     template(i, data) {
         const status = this.uploadStatus(data);
+        const id = escapeHtml(this.id(data));
+        const name = escapeHtml(this.name(data));
+        const intervalsStatus = escapeHtml(status.intervals ?? 'none');
+        const stravaStatus = escapeHtml(status.strava ?? 'none');
+        const trainingPeaksStatus = escapeHtml(status.trainingPeaks ?? 'none');
 
         return `
-            <activity-item id="i${i}--activity--item" class="some" data-id="${this.id(data)}">
+            <activity-item id="i${i}--activity--item" class="some" data-id="${id}">
                     <div class="activity--cont list--row--outer">
                         <div class="list--row--inner activity--info">
                             <div class="activity--info--short">
                                 <view-action
                                     class="info"
                                     action=":toggleExpand"
-                                    topic=":activity:${this.id(data)}">
+                                    topic=":activity:${id}">
                                     <div id="i${i}--activity--date" class="activity--name">
-                                        ${this.name(data)}
+                                        ${name}
                                     </div>
                                     <div class="activity--date">
                                         ${this.date(data)}
@@ -81,7 +86,7 @@ class ActivityList extends HTMLElement {
                                 <view-action
                                     class=""
                                     action=":options"
-                                    topic=":activity:${this.id(data)}">
+                                    topic=":activity:${id}">
                                     <svg class="control--btn--icon" width="24" height="24">
                                         <use href="#icon--options" />
                                     </svg>
@@ -95,26 +100,35 @@ class ActivityList extends HTMLElement {
                                     <view-action
                                         class="activity--action action--intervals"
                                         action=":intervals:upload"
-                                        topic=":activity:${this.id(data)}">
+                                        topic=":activity:${id}">
                                         <svg class="activity--icon intervals--icon" width="24" height="24">
                                             <use href="#icon--intervals" />
                                         </svg>
-                                        <div class="connection-icon-switch--indicator ${status.intervals ?? 'none'} intervals"></div>
+                                        <div class="connection-icon-switch--indicator ${intervalsStatus} intervals"></div>
                                     </view-action>
 
                                     <view-action
                                         class="activity--action"
                                         action=":strava:upload"
-                                        topic=":activity:${this.id(data)}">
+                                        topic=":activity:${id}">
                                         <svg class="activity--icon strava--icon" width="24" height="24">
                                             <use href="#icon--strava" />
                                         </svg>
-                                        <div class="connection-icon-switch--indicator ${status.strava ?? 'none'} strava"></div>
+                                        <div class="connection-icon-switch--indicator ${stravaStatus} strava"></div>
+                                    </view-action>
+                                    <!--
+                                    <view-action
+                                        class="activity--action"
+                                        action=":trainingPeaks:upload"
+                                        topic=":activity:${id}">
+                                        <div class="tp-logo--icon">TP</div>
+                                        <div class="connection-icon-switch--indicator ${trainingPeaksStatus} tp"></div>
+                                    -->
                                     </view-action>
                                     <view-action
                                         class="activity--action action--download"
                                         action=":download"
-                                        topic=":activity:${this.id(data)}">
+                                        topic=":activity:${id}">
                                         <svg class="activity--icon">
                                             <use href="#icon--save-btn" />
                                         </svg>
@@ -122,7 +136,7 @@ class ActivityList extends HTMLElement {
                                     <view-action
                                         class="activity--action action--image"
                                         action=":image"
-                                        topic=":activity:${this.id(data)}">
+                                        topic=":activity:${id}">
                                         <svg class="activity--icon">
                                             <use href="#icon--image" />
                                         </svg>
@@ -134,22 +148,13 @@ class ActivityList extends HTMLElement {
                     <view-action
                         class="activity--options"
                         action=":remove"
-                        topic=":activity:${this.id(data)}">
+                        topic=":activity:${id}">
                         <span class="activity--remove">Delete</span>
                     </view-action>
             </activity-item>
         `;
     }
 }
-
-                                    // <view-action
-                                    //     class="activity--action"
-                                    //     action=":tp:upload"
-                                    //     topic=":activity:${this.id(data)}">
-                                    //     <div class="tp-logo--icon">TP</div>
-                                    //     <div class="connection-icon-switch--indicator ${status.tp ?? 'none'} tp"></div>
-                                    // </view-action>
-
 
 customElements.define('activity-list', ActivityList);
 
@@ -205,7 +210,7 @@ class ActivityItem extends HTMLElement {
             this.onLoading(this.$indicatorIntervals);
             return;
         }
-        if(action === ':tp:upload') {
+        if(action === ':trainingPeaks:upload') {
             models.activity.upload('trainingPeaks', this.id);
             this.onLoading(this.$indicatorTP);
             return;
@@ -223,10 +228,10 @@ class ActivityItem extends HTMLElement {
         if(action === ':intervals:upload:fail') {
             this.onFail(this.$indicatorIntervals);
         }
-        if(action === ':tp:upload:success') {
+        if(action === ':trainingPeaks:upload:success') {
             this.onSuccess(this.$indicatorTP);
         }
-        if(action === ':tp:upload:fail') {
+        if(action === ':trainingPeaks:upload:fail') {
             this.onFail(this.$indicatorTP);
         }
     }
