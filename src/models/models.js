@@ -12,6 +12,7 @@ import API from './api.js';
 import { workouts as workoutsFile }  from '../workouts/workouts.js';
 import { zwo } from '../workouts/zwo.js';
 import { fileHandler } from '../file.js';
+import { cardFromMessages } from '../activity/workout-card.js';
 import { Model as Cycling } from '../physics.js';
 import { fit } from '../fit/fit.js';
 
@@ -626,8 +627,32 @@ class Activity extends Model {
             fileHandler.Type.OctetStream
         );
     }
+    // Opens the saved .fit file, paints a JPEG of the stats and chart, and
+    // downloads it. The ride stays on this device.
+    async image(id) {
+        const self = this;
+        const record = await idb.get('activity', id);
+        if(!record?.blob) {
+            console.error(`:activity :image missing blob`, id);
+            return;
+        }
+        const { renderWorkoutCardJpeg } = await import('../activity/workout-card-canvas.js');
+        const buffer = await record.blob.arrayBuffer();
+        const messages = fit.FITjs.decode(new DataView(buffer));
+        const card = cardFromMessages(messages, record.summary ?? {});
+        const jpeg = await renderWorkoutCardJpeg(card);
+        fileHandler.download()(
+            jpeg,
+            self.imageFileName(record.summary?.timestamp),
+            'image/jpeg'
+        );
+    }
     fileName(timestamp) {
         return `workout-${dateToDashString(new Date(timestamp))}.fit`;
+    }
+    imageFileName(timestamp) {
+        const when = Number.isFinite(timestamp) ? new Date(timestamp) : new Date();
+        return `workout-${dateToDashString(when)}.jpg`;
     }
     encode(db) {
         const records = db.records;

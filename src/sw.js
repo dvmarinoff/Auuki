@@ -1,4 +1,4 @@
-const cacheName = 'Flux-v008';
+const cacheName = 'Flux-v009';
 const resources = [
     './',
     'index.html',
@@ -9,6 +9,7 @@ const resources = [
     'images/logo/logo-192px.png',
     'images/logo/logo-512px.png',
     'images/logo/logo-1024px.png',
+    'images/logo/auuki-logo-letters.png',
     'favicon-16.png',
     'favicon-32.png',
     'favicon-64.png',
@@ -16,6 +17,8 @@ const resources = [
     'index.js',
 
     'activity/enums.js',
+    'activity/workout-card.js',
+    'activity/workout-card-canvas.js',
 
     'ant/ant.js',
     'ant/channel.js',

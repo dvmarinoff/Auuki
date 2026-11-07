@@ -2762,14 +2762,6 @@ activity-item {
         /* height: 8rem; */
         background-color: var(--background-color-2);
     }
-
-    .action--image {
-        cursor: not-allowed;
-
-        svg {
-            fill: var(--gray);
-        }
-    }
 }
 .activity--options {
     display: grid ;
@@ -2800,6 +2792,11 @@ activity-item {
 
     .action--image {
         justify-self: center;
+    }
+    .action--image.loading {
+        cursor: wait;
+        opacity: 0.45;
+        pointer-events: none;
     }
     .action--intervals {
         justify-self: left;

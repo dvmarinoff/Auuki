@@ -200,6 +200,10 @@ class ActivityItem extends HTMLElement {
             models.activity.download(this.id);
             return;
         }
+        if(action === ':image') {
+            this.onImage();
+            return;
+        }
         if(action === ':strava:upload') {
             models.activity.upload('strava', this.id);
             this.onLoading(this.$indicatorStrava);
@@ -233,6 +237,18 @@ class ActivityItem extends HTMLElement {
         }
         if(action === ':trainingPeaks:upload:fail') {
             this.onFail(this.$indicatorTP);
+        }
+    }
+    async onImage() {
+        const $image = this.querySelector('.action--image');
+        if($image?.classList.contains('loading')) return;
+        $image?.classList.add('loading');
+        try {
+            await models.activity.image(this.id);
+        } catch(e) {
+            console.error(`:activity :image`, e);
+        } finally {
+            $image?.classList.remove('loading');
         }
     }
     onLoading($el) {
