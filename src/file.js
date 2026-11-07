@@ -49,6 +49,7 @@ class FileHandler {
             case 'erg': return self.readTextFile(file); break;
             case 'mrc': return self.readTextFile(file); break;
             case 'fit': return self.readBinaryFile(file); break;
+            case 'gpx': return self.readTextFile(file); break;
             default:           self.unsupportedFormat(); break;
         }
     }
